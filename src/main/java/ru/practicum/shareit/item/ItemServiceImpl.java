@@ -46,7 +46,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getItemById(int itemId) {
         if (!itemStorage.existsById(itemId)) {
             log.error("NotFoundException: Item with id='{}' was not found.", itemId);
-            throw new UserNotFoundException("Item was not found.");
+            throw new UserNotFoundException("Item was not found");
         }
 
         return mapper.toItemDto(itemStorage.getItemById(itemId));
@@ -59,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
         }
         if (!itemStorage.existsById(itemId)) {
             log.error("NotFoundException: User with id='{}' was not found.", itemId);
-            throw new UserNotFoundException("User was not found.");
+            throw new UserNotFoundException("User was not found");
         }
 
         if (!itemStorage.existsItemById(itemId, ownerId)) {

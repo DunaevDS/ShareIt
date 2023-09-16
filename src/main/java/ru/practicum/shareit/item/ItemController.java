@@ -39,8 +39,8 @@ public class ItemController {
     public ItemDto create(@Valid @RequestBody ItemDto itemDto,
                           @RequestHeader(OWNER) int ownerId,
                           HttpServletRequest request) {
-        log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
-                request.getMethod(), request.getRequestURI(), request.getQueryString()
+        log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Owner ID = '{}'",
+                request.getMethod(), request.getRequestURI(), request.getQueryString(), request.getHeader(OWNER)
         );
 
         ItemDto newItemDto;

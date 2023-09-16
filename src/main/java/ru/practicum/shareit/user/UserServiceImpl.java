@@ -5,9 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.ValidationException;
+
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -58,7 +59,7 @@ public class UserServiceImpl implements UserService {
     public UserDto delete(int userId) {
         if (!userStorage.existsById(userId)) {
             log.error("NotFoundException: User with id='{}' was not found.", userId);
-            throw new UserNotFoundException("User was not found.");
+            throw new UserNotFoundException("User was not found");
         }
         return mapper.mapToUserDto(userStorage.delete(userId));
     }
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(int userId) {
         if (!userStorage.existsById(userId)) {
             log.error("NotFoundException: User with id='{}' was not found.", userId);
-            throw new UserNotFoundException("User was not found.");
+            throw new UserNotFoundException("User was not found");
         }
 
         return mapper.mapToUserDto(userStorage.getUserById(userId));
