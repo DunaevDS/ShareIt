@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-    private final String OWNER = "X-Sharer-User-Id";
+    private final String owner = "X-Sharer-User-Id";
     private final ItemService itemService;
     private final UserService userService;
 
@@ -37,10 +37,10 @@ public class ItemController {
     @ResponseBody
     @PostMapping
     public ItemDto create(@Valid @RequestBody ItemDto itemDto,
-                          @RequestHeader(OWNER) int ownerId,
+                          @RequestHeader(owner) int ownerId,
                           HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Owner ID = '{}'",
-                request.getMethod(), request.getRequestURI(), request.getQueryString(), request.getHeader(OWNER)
+                request.getMethod(), request.getRequestURI(), request.getQueryString(), request.getHeader(owner)
         );
 
         ItemDto newItemDto;
@@ -55,7 +55,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByOwner(@RequestHeader(OWNER) int ownerId, HttpServletRequest request) {
+    public List<ItemDto> getItemsByOwner(@RequestHeader(owner) int ownerId, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(), request.getRequestURI(), request.getQueryString()
         );
@@ -67,7 +67,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto update(@RequestBody ItemDto itemDto,
                           @PathVariable int itemId,
-                          @RequestHeader(OWNER) int ownerId,
+                          @RequestHeader(owner) int ownerId,
                           HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(), request.getRequestURI(), request.getQueryString()
@@ -83,7 +83,7 @@ public class ItemController {
 
     @DeleteMapping("/{itemId}")
     public ItemDto delete(@PathVariable int itemId,
-                          @RequestHeader(OWNER) int ownerId,
+                          @RequestHeader(owner) int ownerId,
                           HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(), request.getRequestURI(), request.getQueryString()
