@@ -30,7 +30,6 @@ public class ItemServiceImpl implements ItemService {
             log.error("EmptyObjectException: Item is null.");
             throw new UserNotFoundException("Item was not provided");
         }
-
         validation(itemDto);
 
         return mapper.toItemDto(
@@ -57,7 +56,6 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto == null) {
             log.error("EmptyObjectException:  Item is null.");
             throw new UserNotFoundException("Item was not provided");
-            //itemDto.setId(itemId);
         }
         if (!itemStorage.existsById(itemId)) {
             log.error("NotFoundException: User with id='{}' was not found.", itemId);
@@ -68,6 +66,8 @@ public class ItemServiceImpl implements ItemService {
             log.error("NotFoundException: User with id='{}' dont have item with id='{}'", ownerId, itemId);
             throw new ItemNotFoundException("Item was not found!");
         }
+
+        itemDto.setId(itemId);
 
         return mapper.toItemDto(
                 itemStorage.update(mapper.toItem(itemDto, ownerId))
@@ -88,11 +88,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public List<ItemDto> getItemsBySearchQuery(String text) {
-        if (text.isBlank()) {
-            log.error("NotFoundException: text is incorrect");
-            throw new ItemNotFoundException("Items were not found due to incorrect request");
-        }
-
         return itemStorage.getItemsBySearch(text.toLowerCase()).stream()
                 .map(mapper::toItemDto)
                 .collect(toList());

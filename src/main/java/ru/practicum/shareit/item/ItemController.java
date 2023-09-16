@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserService;
 
@@ -42,9 +43,12 @@ public class ItemController {
                 request.getMethod(), request.getRequestURI(), request.getQueryString()
         );
 
-        ItemDto newItemDto = null;
+        ItemDto newItemDto;
         if (userService.existsById(ownerId)) {
             newItemDto = itemService.create(itemDto, ownerId);
+        } else {
+            log.error("NotFoundException: User with id='{}' was not found.", ownerId);
+            throw new UserNotFoundException("User with ID = " + ownerId + " was not found.");
         }
 
         return newItemDto;

@@ -4,7 +4,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.List;
 
-
 public interface ItemService {
     ItemDto create(ItemDto itemDto, int ownerId);
 

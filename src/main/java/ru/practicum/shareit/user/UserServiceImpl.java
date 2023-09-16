@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("User was not provided");
         }
 
-        validation(userDto);
+        validationUserCreation(userDto);
 
         return mapper.mapToUserDto(
                 userStorage.create(mapper.mapToUser(userDto))
@@ -46,6 +46,9 @@ public class UserServiceImpl implements UserService {
             log.error("NotFoundException: User with id='{}' was not found.", id);
             throw new UserNotFoundException("User was not found.");
         }
+
+        validationUserUpdate(userDto);
+        userDto.setId(id);
 
         return mapper.mapToUserDto(
                 userStorage.update(mapper.mapToUser(userDto))
@@ -75,11 +78,11 @@ public class UserServiceImpl implements UserService {
                 .collect(toList());
     }
 
-    public boolean existsById(int userId){
+    public boolean existsById(int userId) {
         return userStorage.existsById(userId);
     }
 
-    private void validation(UserDto userDto) {
+    private void validationUserCreation(UserDto userDto) {
         if (userDto.getEmail().isBlank() || !isValidEmail(userDto.getEmail())) {
             log.error("ValidationException: incorrect email");
             throw new ValidationException("Incorrect email " + userDto.getEmail());
@@ -87,6 +90,25 @@ public class UserServiceImpl implements UserService {
         if ((userDto.getName().isBlank()) || (userDto.getName().contains(" "))) {
             log.error("ValidationException: incorrect login");
             throw new ValidationException("Incorrect name " + userDto.getName());
+        }
+        if (userStorage.existsByEmail(userDto.getEmail())) {
+            log.error("ValidationException: duplicate email");
+            throw new ValidationException("Duplicate email " + userDto.getEmail());
+        }
+    }
+
+    private void validationUserUpdate(UserDto userDto) {
+        if (userDto.getEmail() != null) {
+            if (!isValidEmail(userDto.getEmail())) {
+                log.error("ValidationException: incorrect email");
+                throw new ValidationException("Incorrect email " + userDto.getEmail());
+            }
+        }
+        if (userDto.getName() != null) {
+            if ((userDto.getName().contains(" "))) {
+                log.error("ValidationException: incorrect login");
+                throw new ValidationException("Incorrect name " + userDto.getName());
+            }
         }
     }
 

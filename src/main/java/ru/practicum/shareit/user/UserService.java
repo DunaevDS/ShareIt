@@ -4,7 +4,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 
-
 public interface UserService {
     UserDto create(UserDto userDto);
 
@@ -15,5 +14,6 @@ public interface UserService {
     UserDto getUserById(int userId);
 
     List<UserDto> getUsers();
+
     boolean existsById(int userId);
 }

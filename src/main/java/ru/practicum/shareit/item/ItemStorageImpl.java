@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public Item update(Item item) {
-        /*if (item.getName() == null) {
+        if (item.getName() == null) {
             item.setName(items.get(item.getId()).getName());
         }
         if (item.getDescription() == null) {
@@ -37,7 +38,7 @@ public class ItemStorageImpl implements ItemStorage {
         }
         if (item.getAvailable() == null) {
             item.setAvailable(items.get(item.getId()).getAvailable());
-        }*/
+        }
         items.put(item.getId(), item);
 
         log.info("Item info was updated: id='{}', name = '{}'",
@@ -80,11 +81,15 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public List<Item> getItemsBySearch(String text) {
-        return items.values().stream()
+        List<Item> searchItems = new ArrayList<>();
+        if (!text.isBlank()) {
+            searchItems = items.values().stream()
                     .filter(Item::getAvailable)
                     .filter(item -> item.getName().toLowerCase().contains(text)
                             || item.getDescription().toLowerCase().contains(text))
                     .collect(toList());
+        }
+        return searchItems;
     }
 
     @Override

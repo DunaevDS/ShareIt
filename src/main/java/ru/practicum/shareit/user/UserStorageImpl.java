@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.exception.UserAlreadyExistsException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,11 +34,25 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User update(User user) {
-        users.put(user.getId(), user);
+        if (user.getName() == null) {
+            user.setName(users.get(user.getId()).getName());
+        }
+        if (user.getEmail() == null) {
+            user.setEmail(users.get(user.getId()).getEmail());
+        }
 
-        log.info("User info was updated: id='{}', name = '{}'",
-                user.getId(), user.getName());
+        if (users.values().stream()
+                .filter(u -> u.getEmail().equals(user.getEmail()))
+                .allMatch(u -> u.getId() == (user.getId()))) {
 
+            users.put(user.getId(), user);
+
+            log.info("User info was updated: id='{}', name = '{}'",
+                    user.getId(), user.getName());
+        } else {
+            log.error("User with email='{}' already exists ", user.getEmail());
+            throw new UserAlreadyExistsException("User with provided email " + user.getEmail() + " already exists");
+        }
         return user;
     }
 
@@ -54,6 +69,13 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public boolean existsById(int userId) {
         return users.containsKey(userId);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return users.values().stream()
+                .anyMatch(u -> u.getEmail().equals(email));
+
     }
 
     private int generateNewId() {
