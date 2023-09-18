@@ -63,8 +63,8 @@ public class ItemController {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(), request.getRequestURI(), request.getQueryString()
         );
-
-        return itemService.update(itemDto, ownerId, itemId);
+        itemDto.setId(itemId);
+        return itemService.update(itemDto, ownerId);
     }
 
     @DeleteMapping("/{itemId}")

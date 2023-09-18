@@ -63,22 +63,22 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto update(ItemDto itemDto, int ownerId, int itemId) {
+    public ItemDto update(ItemDto itemDto, int ownerId) {
         if (itemDto == null) {
             log.error("EmptyObjectException:  Item is null.");
             throw new ItemNotFoundException("Item was not provided");
         }
-        if (!itemStorage.existsById(itemId)) {
-            log.error("NotFoundException: Item with id='{}' was not found.", itemId);
+        if (!itemStorage.existsById(itemDto.getId())) {
+            log.error("NotFoundException: Item with id='{}' was not found.", itemDto.getId());
             throw new ItemNotFoundException("Item was not found");
         }
 
-        if (!itemStorage.existsItemById(itemId, ownerId)) {
-            log.error("NotFoundException: User with id='{}' dont have item with id='{}'", ownerId, itemId);
-            throw new ItemNotFoundException("User with id= " + ownerId + " dont have item with id= " + itemId);
+        if (!itemStorage.existsItemById(itemDto.getId(), ownerId)) {
+            log.error("NotFoundException: User with id='{}' dont have item with id='{}'", ownerId, itemDto.getId());
+            throw new ItemNotFoundException("User with id= " + ownerId + " dont have item with id= " + itemDto.getId());
         }
         if (userService.existsById(ownerId)) {
-            itemDto.setId(itemId);
+            itemDto.setId(itemDto.getId());
 
             return ItemMapper.toItemDto(
                     itemStorage.update(ItemMapper.toItem(itemDto, ownerId))

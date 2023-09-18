@@ -11,7 +11,7 @@ public interface ItemService {
 
     ItemDto getItemById(int id);
 
-    ItemDto update(ItemDto itemDto, int ownerId, int itemId);
+    ItemDto update(ItemDto itemDto, int ownerId);
 
     ItemDto delete(int itemId, int ownerId);
 
