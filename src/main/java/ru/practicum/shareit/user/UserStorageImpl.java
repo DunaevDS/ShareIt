@@ -13,7 +13,7 @@ import java.util.Map;
 @Slf4j
 public class UserStorageImpl implements UserStorage {
 
-    public Map<Integer, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
     private int id;
 
     @Override

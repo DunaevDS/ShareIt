@@ -8,6 +8,7 @@ import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
 
@@ -17,79 +18,91 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
-    private final ItemMapper mapper;
+    private final UserService userService;
 
     @Autowired
-    public ItemServiceImpl(@Qualifier("ItemStorage") ItemStorage itemStorage, ItemMapper itemMapper) {
+    public ItemServiceImpl(@Qualifier("ItemStorage") ItemStorage itemStorage, UserService userService) {
         this.itemStorage = itemStorage;
-        this.mapper = itemMapper;
+        this.userService = userService;
     }
 
+    @Override
     public ItemDto create(ItemDto itemDto, int ownerId) {
         if (itemDto == null) {
             log.error("EmptyObjectException: Item is null.");
-            throw new UserNotFoundException("Item was not provided");
+            throw new ItemNotFoundException("Item was not provided");
         }
-        validation(itemDto);
+        if (userService.existsById(ownerId)) {
+            validation(itemDto);
 
-        return mapper.toItemDto(
-                itemStorage.create(mapper.toItem(itemDto, ownerId))
-        );
+            return ItemMapper.toItemDto(
+                    itemStorage.create(ItemMapper.toItem(itemDto, ownerId))
+            );
+        } else {
+            log.error("NotFoundException: User with id='{}' was not found.", ownerId);
+            throw new UserNotFoundException("User with ID = " + ownerId + " was not found.");
+        }
     }
 
+    @Override
     public List<ItemDto> getItemsByOwner(int ownerId) {
         return itemStorage.getItemsByOwner(ownerId).stream()
-                .map(mapper::toItemDto)
+                .map(ItemMapper::toItemDto)
                 .collect(toList());
     }
 
+    @Override
     public ItemDto getItemById(int itemId) {
-        if (!itemStorage.existsById(itemId)) {
+        Item item = itemStorage.getItemById(itemId);
+        if (item == null) {
             log.error("NotFoundException: Item with id='{}' was not found.", itemId);
-            throw new UserNotFoundException("Item was not found");
+            throw new ItemNotFoundException("Item was not found");
         }
 
-        return mapper.toItemDto(itemStorage.getItemById(itemId));
+        return ItemMapper.toItemDto(item);
     }
 
+    @Override
     public ItemDto update(ItemDto itemDto, int ownerId, int itemId) {
         if (itemDto == null) {
             log.error("EmptyObjectException:  Item is null.");
-            throw new UserNotFoundException("Item was not provided");
+            throw new ItemNotFoundException("Item was not provided");
         }
         if (!itemStorage.existsById(itemId)) {
-            log.error("NotFoundException: User with id='{}' was not found.", itemId);
-            throw new UserNotFoundException("User was not found");
+            log.error("NotFoundException: Item with id='{}' was not found.", itemId);
+            throw new ItemNotFoundException("Item was not found");
         }
 
         if (!itemStorage.existsItemById(itemId, ownerId)) {
             log.error("NotFoundException: User with id='{}' dont have item with id='{}'", ownerId, itemId);
-            throw new ItemNotFoundException("Item was not found!");
+            throw new ItemNotFoundException("User with id= " + ownerId + " dont have item with id= " + itemId);
         }
+        if (userService.existsById(ownerId)) {
+            itemDto.setId(itemId);
 
-        itemDto.setId(itemId);
-
-        return mapper.toItemDto(
-                itemStorage.update(mapper.toItem(itemDto, ownerId))
-        );
+            return ItemMapper.toItemDto(
+                    itemStorage.update(ItemMapper.toItem(itemDto, ownerId))
+            );
+        } else {
+            log.error("NotFoundException: User with id='{}' was not found.", ownerId);
+            throw new UserNotFoundException("User with ID = " + ownerId + " was not found.");
+        }
     }
 
+    @Override
     public ItemDto delete(int itemId, int ownerId) {
         if (!itemStorage.existsItemById(itemId, ownerId)) {
             log.error("NotFoundException: User with id={} dont have item with id={}", ownerId, itemId);
             throw new ItemNotFoundException("Item was not found!");
         }
 
-        return mapper.toItemDto(itemStorage.delete(itemId));
+        return ItemMapper.toItemDto(itemStorage.delete(itemId));
     }
 
-    public void deleteItemsByOwner(int ownerId) {
-        itemStorage.deleteItemsByOwner(ownerId);
-    }
-
+    @Override
     public List<ItemDto> getItemsBySearchQuery(String text) {
         return itemStorage.getItemsBySearch(text.toLowerCase()).stream()
-                .map(mapper::toItemDto)
+                .map(ItemMapper::toItemDto)
                 .collect(toList());
     }
 

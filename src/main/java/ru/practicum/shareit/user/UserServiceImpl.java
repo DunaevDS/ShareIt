@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.user.dto.UserDto;
-
 
 import java.util.List;
 
@@ -17,14 +17,16 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
-    private final UserMapper mapper;
+    private final ItemStorage itemStorage;
 
     @Autowired
-    public UserServiceImpl(@Qualifier("UserStorage") UserStorage userStorage, UserMapper userMapper) {
+    public UserServiceImpl(@Qualifier("UserStorage") UserStorage userStorage,
+                           ItemStorage itemStorage) {
         this.userStorage = userStorage;
-        this.mapper = userMapper;
+        this.itemStorage = itemStorage;
     }
 
+    @Override
     public UserDto create(UserDto userDto) {
         if (userDto == null) {
             log.error("EmptyObjectException: User is null.");
@@ -33,11 +35,12 @@ public class UserServiceImpl implements UserService {
 
         validationUserCreation(userDto);
 
-        return mapper.mapToUserDto(
-                userStorage.create(mapper.mapToUser(userDto))
+        return UserMapper.mapToUserDto(
+                userStorage.create(UserMapper.mapToUser(userDto))
         );
     }
 
+    @Override
     public UserDto update(UserDto userDto, int id) {
         if (userDto == null) {
             log.error("EmptyObjectException: User is null.");
@@ -51,34 +54,40 @@ public class UserServiceImpl implements UserService {
         validationUserUpdate(userDto);
         userDto.setId(id);
 
-        return mapper.mapToUserDto(
-                userStorage.update(mapper.mapToUser(userDto))
+        return UserMapper.mapToUserDto(
+                userStorage.update(UserMapper.mapToUser(userDto))
         );
     }
 
+    @Override
     public UserDto delete(int userId) {
         if (!userStorage.existsById(userId)) {
             log.error("NotFoundException: User with id='{}' was not found.", userId);
             throw new UserNotFoundException("User was not found");
         }
-        return mapper.mapToUserDto(userStorage.delete(userId));
+        itemStorage.deleteAllItems(userId);
+        return UserMapper.mapToUserDto(userStorage.delete(userId));
     }
 
+    @Override
     public UserDto getUserById(int userId) {
-        if (!userStorage.existsById(userId)) {
+        User user = userStorage.getUserById(userId);
+        if (user == null) {
             log.error("NotFoundException: User with id='{}' was not found.", userId);
             throw new UserNotFoundException("User was not found");
         }
 
-        return mapper.mapToUserDto(userStorage.getUserById(userId));
+        return UserMapper.mapToUserDto(user);
     }
 
+    @Override
     public List<UserDto> getUsers() {
         return userStorage.getUsers().stream()
-                .map(mapper::mapToUserDto)
+                .map(UserMapper::mapToUserDto)
                 .collect(toList());
     }
 
+    @Override
     public boolean existsById(int userId) {
         return userStorage.existsById(userId);
     }

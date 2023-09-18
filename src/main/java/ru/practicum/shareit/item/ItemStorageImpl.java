@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class ItemStorageImpl implements ItemStorage {
 
-    public Map<Integer, Item> items = new HashMap<>();
+    private final Map<Integer, Item> items = new HashMap<>();
     private int id;
 
     @Override
@@ -63,7 +63,7 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public void deleteItemsByOwner(int ownerId) {
+    public void deleteAllItems(int ownerId) {
         List<Integer> deleteIds = items.values().stream()
                 .filter(item -> item.getOwnerId() == ownerId)
                 .map(Item::getId)
