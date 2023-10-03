@@ -40,7 +40,6 @@ public class UserServiceImpl implements UserService {
             log.error("User with email='{}' already exists", userDto.getEmail());
             throw new UserAlreadyExistsException("User with email = " + userDto.getEmail() + " already exists");
         }
-
     }
 
     @Override
