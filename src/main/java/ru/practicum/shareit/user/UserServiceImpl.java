@@ -2,79 +2,94 @@ package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.User;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
+@Transactional
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
-    private final ItemStorage itemStorage;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(@Qualifier("UserStorage") UserStorage userStorage,
-                           ItemStorage itemStorage) {
-        this.userStorage = userStorage;
-        this.itemStorage = itemStorage;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
+    @Transactional
     public UserDto create(UserDto userDto) {
         if (userDto == null) {
             log.error("EmptyObjectException: User is null.");
             throw new UserNotFoundException("User was not provided");
         }
-
         validationUserCreation(userDto);
 
-        return UserMapper.mapToUserDto(
-                userStorage.create(UserMapper.mapToUser(userDto))
-        );
+        return UserMapper.mapToUserDto(userRepository.save(UserMapper.mapToUser(userDto)));
     }
 
     @Override
-    public UserDto update(UserDto userDto, int id) {
+    @Transactional
+    public UserDto update(UserDto userDto, Integer id) {
         if (userDto == null) {
             log.error("EmptyObjectException: User is null.");
             throw new UserNotFoundException("User was not provided");
-        }
-        if (!userStorage.existsById(id)) {
-            log.error("NotFoundException: User with id='{}' was not found.", id);
-            throw new UserNotFoundException("User was not found.");
         }
 
         validationUserUpdate(userDto);
         userDto.setId(id);
 
-        return UserMapper.mapToUserDto(
-                userStorage.update(UserMapper.mapToUser(userDto))
-        );
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            log.error("User with id = " + id + " was not found");
+            throw new UserNotFoundException("User with id = " + id + " was not found");
+        }
+
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
+
+        if ((userDto.getEmail() != null) && (!userDto.getEmail().equals(user.getEmail()))) {
+            if (userRepository.findByEmail(userDto.getEmail())
+                    .stream()
+                    .filter(u -> u.getEmail().equals(userDto.getEmail()))
+                    .allMatch(u -> u.getId().equals(userDto.getId()))) {
+                user.setEmail(userDto.getEmail());
+            } else {
+                log.error("User with email='{}' already exists", userDto.getEmail());
+                throw new UserAlreadyExistsException("User with email = " + userDto.getEmail() + " already exists");
+            }
+        }
+        return UserMapper.mapToUserDto(userRepository.save(user));
     }
 
     @Override
-    public UserDto delete(int userId) {
-        if (!userStorage.existsById(userId)) {
+    @Transactional
+    public void delete(Integer userId) {
+        if (!userRepository.existsById(userId)) {
             log.error("NotFoundException: User with id='{}' was not found.", userId);
             throw new UserNotFoundException("User was not found");
         }
-        itemStorage.deleteAllItems(userId);
-        return UserMapper.mapToUserDto(userStorage.delete(userId));
+
+        userRepository.deleteById(userId);
     }
 
     @Override
-    public UserDto getUserById(int userId) {
-        User user = userStorage.getUserById(userId);
+    public UserDto getUserById(Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
-            log.error("NotFoundException: User with id='{}' was not found.", userId);
-            throw new UserNotFoundException("User was not found");
+            log.error("User with id = " + userId + " was not found");
+            throw new UserNotFoundException("User with id = " + userId + " was not found");
         }
 
         return UserMapper.mapToUserDto(user);
@@ -82,14 +97,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUsers() {
-        return userStorage.getUsers().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::mapToUserDto)
                 .collect(toList());
     }
 
     @Override
-    public boolean existsById(int userId) {
-        return userStorage.existsById(userId);
+    public User findUserById(Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            log.error("User with id = " + userId + " was not found");
+            throw new UserNotFoundException("User with id = " + userId + " was not found");
+        }
+
+        return user;
     }
 
     private void validationUserCreation(UserDto userDto) {
@@ -100,10 +121,6 @@ public class UserServiceImpl implements UserService {
         if ((userDto.getName().isBlank()) || (userDto.getName().contains(" "))) {
             log.error("ValidationException: incorrect login");
             throw new ValidationException("Incorrect name " + userDto.getName());
-        }
-        if (userStorage.existsByEmail(userDto.getEmail())) {
-            log.error("ValidationException: duplicate email");
-            throw new ValidationException("Duplicate email " + userDto.getEmail());
         }
     }
 

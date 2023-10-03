@@ -8,8 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class ItemRequestDto {
-    private int id;
     private String description;
-    private String requestor;
+    private String requestorName;
     private LocalDateTime created;
 }

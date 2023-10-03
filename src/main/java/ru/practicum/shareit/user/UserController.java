@@ -22,10 +22,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable int userId,
+    public UserDto getUserById(@PathVariable Integer userId,
                                HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
-                request.getMethod(), request.getRequestURI(), request.getQueryString()
+                request.getMethod(),
+                request.getRequestURI(),
+                request.getQueryString()
         );
 
         return userService.getUserById(userId);
@@ -36,7 +38,9 @@ public class UserController {
     public UserDto create(@Valid @RequestBody UserDto userDto,
                           HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
-                request.getMethod(), request.getRequestURI(), request.getQueryString()
+                request.getMethod(),
+                request.getRequestURI(),
+                request.getQueryString()
         );
 
         return userService.create(userDto);
@@ -45,22 +49,26 @@ public class UserController {
     @ResponseBody
     @PatchMapping("/{userId}")
     public UserDto update(@RequestBody UserDto userDto,
-                          @PathVariable int userId,
+                          @PathVariable Integer userId,
                           HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
-                request.getMethod(), request.getRequestURI(), request.getQueryString()
+                request.getMethod(),
+                request.getRequestURI(),
+                request.getQueryString()
         );
 
         return userService.update(userDto, userId);
     }
 
     @DeleteMapping("/{userId}")
-    public UserDto delete(@PathVariable int userId,
-                          HttpServletRequest request) {
+    public void delete(@PathVariable Integer userId,
+                       HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
-                request.getMethod(), request.getRequestURI(), request.getQueryString()
+                request.getMethod(),
+                request.getRequestURI(),
+                request.getQueryString()
         );
 
-        return userService.delete(userId);
+        userService.delete(userId);
     }
 }
