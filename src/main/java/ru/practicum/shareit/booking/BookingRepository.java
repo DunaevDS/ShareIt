@@ -7,9 +7,12 @@ import ru.practicum.shareit.booking.model.Booking;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findByBookerId(Integer bookerId, Sort sort);
+
+    Optional<Booking> findByIdAndItem_Owner_Id(Integer itemId, Integer bookerId);
 
     List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfter(Integer bookerId, LocalDateTime start,
                                                               LocalDateTime end, Sort sort);

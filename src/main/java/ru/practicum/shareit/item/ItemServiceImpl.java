@@ -164,7 +164,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public CommentDto createComment(CommentDto commentDto, Integer itemId, Integer userId) {
+    public CommentDto createComment(String commentDtoText, Integer itemId, Integer userId) {
         userService.findUserById(userId);
         Comment comment = new Comment();
         Booking booking = bookingService.getBookingWithUserBookedItem(itemId, userId);
@@ -172,7 +172,7 @@ public class ItemServiceImpl implements ItemService {
             comment.setCreated(LocalDateTime.now());
             comment.setItem(booking.getItem());
             comment.setAuthor(booking.getBooker());
-            comment.setText(commentDto.getText());
+            comment.setText(commentDtoText);
         } else {
             log.error("ValidationException: User with id='{}' did not book item with id='{}'", userId, itemId);
             throw new UserCommentException("User with id= " + userId + " did not book item with id= " + itemId);

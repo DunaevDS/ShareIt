@@ -21,7 +21,7 @@ public interface ItemService {
 
     List<ItemDto> getItemsBySearchQuery(String text);
 
-    CommentDto createComment(CommentDto commentDto, Integer itemId, Integer userId);
+    CommentDto createComment(String commentDtoText, Integer itemId, Integer userId);
 
     List<CommentDto> getCommentsByItemId(Integer itemId);
 }

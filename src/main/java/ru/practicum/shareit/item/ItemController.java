@@ -113,6 +113,6 @@ public class ItemController {
                 request.getQueryString()
         );
 
-        return itemService.createComment(commentDto, itemId, userId);
+        return itemService.createComment(commentDto.getText(), itemId, userId);
     }
 }

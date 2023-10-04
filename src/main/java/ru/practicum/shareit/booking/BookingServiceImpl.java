@@ -12,7 +12,9 @@ import ru.practicum.shareit.booking.enums.Status;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,24 +44,34 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto create(PostBookingDto postBookingDto, Integer bookerId) {
-        userService.findUserById(bookerId);
+
+        User user = userService.findUserById(bookerId);
 
         Integer itemId = postBookingDto.getItemId();
-        boolean isAvailable = itemService.findItemById(itemId).getAvailable();
+        Item item = itemService.findItemById(itemId);
+        boolean isAvailable = item.getAvailable();
 
-        if (!isAvailable) {
-            log.error("ValidationException: Item with id='{}' can not be booked.", itemId);
-            throw new PermissionException("Item with id = " + itemId + " can not be booked");
-        }
-
-        Booking booking = bookingMapper.toBooking(postBookingDto, bookerId);
-        Integer bookingOwnerId = booking.getItem().getOwner().getId();
+        Integer bookingOwnerId = item.getOwner().getId();
 
         if (bookerId.equals(bookingOwnerId)) {
             log.error("PermissionException: Item with id='{}' can not be booked by owner", itemId);
             throw new UserNotFoundException("Item with id= " + itemId +
                     " can not be booked by owner");
         }
+
+        if (!isAvailable) {
+            log.error("ValidationException: Item with id='{}' can not be booked.", itemId);
+            throw new PermissionException("Item with id = " + itemId + " can not be booked");
+        }
+
+        Booking booking = new Booking(
+                null,
+                postBookingDto.getStart(),
+                postBookingDto.getEnd(),
+                item,
+                user,
+                Status.WAITING
+        );
 
         bookingTimeValidation(booking);
 
@@ -70,25 +82,14 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto update(Integer bookingId, Integer userId, Boolean approved) {
         userService.findUserById(userId);
 
-        Booking booking = bookingRepository.findById(bookingId).orElse(null);
-        if (booking == null) {
-            log.error("BookingNotFoundException: Booking with id='{}' was not found.", bookingId);
-            throw new BookingNotFoundException("Booking was not found");
-        }
+        Booking booking = bookingRepository.findByIdAndItem_Owner_Id(bookingId, userId).orElseThrow(() -> throwBookingNotFoundException(
+                "BookingNotFoundException: Booking with id=" + bookingId + " was not found."));
 
         bookingTimeValidation(booking);
 
-        Integer bookerId = booking.getBooker().getId();
         Integer bookerItemId = booking.getItem().getId();
 
-        if (bookerId.equals(userId)) {
-            if (!approved) {
-                booking.setStatus(Status.CANCELED);
-            } else {
-                log.error("BookingNotFoundException: Booking with id='{}' was not found.", bookingId);
-                throw new BookingNotFoundException("Booking was not found");
-            }
-        } else if ((isItemOwner(bookerItemId, userId))
+        if ((isItemOwner(bookerItemId, userId))
                 && (!booking.getStatus().equals(Status.CANCELED))) {
             if (!booking.getStatus().equals(Status.WAITING)) {
                 log.error("BookingAlreadyApprovedException: Booking was made already");
@@ -119,11 +120,8 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getBookingById(Integer bookingId, Integer userId) {
         userService.findUserById(userId);
 
-        Booking booking = bookingRepository.findById(bookingId).orElse(null);
-        if (booking == null) {
-            log.error("BookingNotFoundException: Booking with id='{}' was not found.", bookingId);
-            throw new BookingNotFoundException("Booking was not found");
-        }
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> throwBookingNotFoundException(
+                "BookingNotFoundException: Booking with id=" + bookingId + " was not found."));
 
         Integer bookerId = booking.getBooker().getId();
         Integer bookerItemId = booking.getItem().getId();
@@ -240,5 +238,10 @@ public class BookingServiceImpl implements BookingService {
             log.error("IncorrectDateException");
             throw new IncorrectDateException("IncorrectDateException");
         }
+    }
+
+    private BookingNotFoundException throwBookingNotFoundException(String message) {
+        log.error(message);
+        throw new BookingNotFoundException(message);
     }
 }

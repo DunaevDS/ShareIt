@@ -7,7 +7,6 @@ import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.ItemServiceImpl;
 import ru.practicum.shareit.item.coment.dto.CommentDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserServiceImpl;
@@ -32,10 +31,6 @@ public class ConnectingService {
 
     public User findUserById(Integer userId) {
         return userService.findUserById(userId);
-    }
-
-    public Item findItemById(Integer itemId) {
-        return itemService.findItemById(itemId);
     }
 
     public BookingShortDto getLastBooking(Integer itemId) {
