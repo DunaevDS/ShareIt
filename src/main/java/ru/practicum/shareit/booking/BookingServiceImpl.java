@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -12,8 +11,12 @@ import ru.practicum.shareit.booking.enums.BookingState;
 import ru.practicum.shareit.booking.enums.Status;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.*;
-import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.coment.CommentMapper;
+import ru.practicum.shareit.item.coment.CommentRepository;
 import ru.practicum.shareit.item.coment.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
@@ -21,8 +24,11 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 
 @Slf4j
@@ -31,16 +37,18 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final UserService userService;
-    private final ItemService itemService;
+    private final ItemRepository itemRepository;
+    private final CommentRepository commentRepository;
 
     @Autowired
-    @Lazy
     public BookingServiceImpl(BookingRepository bookingRepository,
                               UserService userService,
-                              ItemService itemService) {
+                              ItemRepository itemRepository,
+                              CommentRepository commentRepository) {
         this.bookingRepository = bookingRepository;
         this.userService = userService;
-        this.itemService = itemService;
+        this.itemRepository = itemRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -49,7 +57,8 @@ public class BookingServiceImpl implements BookingService {
         User user = UserMapper.mapToUser(userService.findUserById(bookerId));
 
         Integer itemId = postBookingDto.getItemId();
-        Item item = itemService.findItemById(itemId);
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> throwItemNotFoundException(
+                "NotFoundException: Item with id= " + itemId + " was not found."));
         boolean isAvailable = item.getAvailable();
 
         Integer bookingOwnerId = item.getOwner().getId();
@@ -76,7 +85,7 @@ public class BookingServiceImpl implements BookingService {
 
         bookingTimeValidation(booking);
 
-        List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
+        List<CommentDto> comments = getCommentsByItemId(itemId);
 
         return BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
     }
@@ -116,7 +125,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         Integer itemId = booking.getItem().getId();
-        List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
+        List<CommentDto> comments = getCommentsByItemId(itemId);
 
         return BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
     }
@@ -132,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
         Integer bookerItemId = booking.getItem().getId();
 
         Integer itemId = booking.getItem().getId();
-        List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
+        List<CommentDto> comments = getCommentsByItemId(itemId);
 
         if (bookerId.equals(userId) || isItemOwner(bookerItemId, userId)) {
             return BookingMapper.toBookingDto(booking, comments);
@@ -176,7 +185,7 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream()
                 .map(booking -> {
                     Integer itemId = booking.getItem().getId();
-                    List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
+                    List<CommentDto> comments = getCommentsByItemId(itemId);
                     return BookingMapper.toBookingDto(booking, comments);
                 })
                 .collect(Collectors.toList());
@@ -217,7 +226,7 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream()
                 .map(booking -> {
                     Integer itemId = booking.getItem().getId();
-                    List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
+                    List<CommentDto> comments = getCommentsByItemId(itemId);
                     return BookingMapper.toBookingDto(booking, comments);
                 })
                 .collect(Collectors.toList());
@@ -242,8 +251,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private boolean isItemOwner(Integer itemId, Integer userId) {
-        return itemService.getItemsByOwner(userId)
-                .stream()
+        List<ItemDto> items = itemRepository.findByOwnerId(userId).stream()
+                .map(item -> {
+                    Integer id = item.getId();
+                    List<CommentDto> comments = getCommentsByItemId(id);
+                    BookingShortDto lastBooking = getLastBooking(id);
+                    BookingShortDto nextBooking = getNextBooking(id);
+                    return ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
+                })
+                .sorted(Comparator.comparing(ItemDto::getId))
+                .collect(toList());
+        return items.stream()
                 .anyMatch(item -> item.getId().equals(itemId));
     }
 
@@ -273,5 +291,17 @@ public class BookingServiceImpl implements BookingService {
             throw new UnsupportedStatusException(message);
         }
         return state;
+    }
+
+    private ItemNotFoundException throwItemNotFoundException(String message) {
+        log.error(message);
+        throw new BookingNotFoundException(message);
+    }
+
+    private List<CommentDto> getCommentsByItemId(Integer itemId) {
+        return commentRepository.findAllByItem_Id(itemId,
+                        Sort.by(Sort.Direction.DESC, "created")).stream()
+                .map(CommentMapper::mapToCommentDto)
+                .collect(toList());
     }
 }

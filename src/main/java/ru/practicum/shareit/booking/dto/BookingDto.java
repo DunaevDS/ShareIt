@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class BookingDto {
-    private Integer id; // пробовал через int, не работает, поэтому далее все оборачивал
+    private Integer id;
 
     @FutureOrPresent
     private LocalDateTime start;

@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.coment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
@@ -12,8 +11,6 @@ public interface ItemService {
     List<ItemDto> getItemsByOwner(Integer ownerId);
 
     ItemDto getItemById(Integer id, Integer userId);
-
-    Item findItemById(Integer itemId);
 
     ItemDto update(ItemDto itemDto, Integer ownerId);
 

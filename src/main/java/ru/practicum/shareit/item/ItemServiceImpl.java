@@ -31,10 +31,10 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
+@Transactional
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
-    private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
     private final BookingService bookingService;
 
@@ -42,18 +42,15 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     public ItemServiceImpl(ItemRepository itemRepository,
                            UserService userService,
-                           CommentMapper commentMapper,
                            CommentRepository commentRepository,
                            BookingService bookingService) {
         this.itemRepository = itemRepository;
         this.userService = userService;
-        this.commentMapper = commentMapper;
         this.commentRepository = commentRepository;
         this.bookingService = bookingService;
     }
 
     @Override
-    @Transactional
     public ItemDto create(ItemDto itemDto, Integer ownerId) {
         if (itemDto == null) {
             log.error("EmptyObjectException: Item is null.");
@@ -105,16 +102,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item findItemById(Integer itemId) {
-        return itemRepository.findById(itemId).orElseThrow(() -> throwItemNotFoundException(
-                "NotFoundException: Item with id= " + itemId + " was not found."));
-    }
-
-    @Override
-    @Transactional
     public ItemDto update(ItemDto itemDto, Integer ownerId) {
         userService.findUserById(ownerId);
-        Item item = itemRepository.findById(itemDto.getId()).orElseThrow(() -> throwItemNotFoundException(
+        Item item = itemRepository.findByIdAndOwnerId(itemDto.getId(), ownerId).orElseThrow(() -> throwItemNotFoundException(
                 "NotFoundException: Item with id= " + itemDto + " was not found."));
 
         if (!itemRepository.existsById(itemDto.getId())) {
@@ -140,7 +130,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public void delete(Integer itemId, Integer ownerId) {
         userService.findUserById(ownerId);
         Item item = itemRepository.findById(itemId).orElseThrow(() -> throwItemNotFoundException(
@@ -174,7 +163,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public CommentDto createComment(String commentDtoText, Integer itemId, Integer userId) {
         userService.findUserById(userId);
         Comment comment = new Comment();
@@ -188,14 +176,14 @@ public class ItemServiceImpl implements ItemService {
             log.error("ValidationException: User with id='{}' did not book item with id='{}'", userId, itemId);
             throw new UserCommentException("User with id= " + userId + " did not book item with id= " + itemId);
         }
-        return commentMapper.mapToCommentDto(commentRepository.save(comment));
+        return CommentMapper.mapToCommentDto(commentRepository.save(comment));
     }
 
     @Override
     public List<CommentDto> getCommentsByItemId(Integer itemId) {
         return commentRepository.findAllByItem_Id(itemId,
                         Sort.by(Sort.Direction.DESC, "created")).stream()
-                .map(commentMapper::mapToCommentDto)
+                .map(CommentMapper::mapToCommentDto)
                 .collect(toList());
     }
 
