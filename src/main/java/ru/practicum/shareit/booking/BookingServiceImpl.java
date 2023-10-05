@@ -8,15 +8,19 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.dto.PostBookingDto;
+import ru.practicum.shareit.booking.enums.BookingState;
 import ru.practicum.shareit.booking.enums.Status;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.coment.dto.CommentDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,18 +30,15 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
-    private final BookingMapper bookingMapper;
     private final UserService userService;
     private final ItemService itemService;
 
     @Autowired
     @Lazy
     public BookingServiceImpl(BookingRepository bookingRepository,
-                              BookingMapper bookingMapper,
                               UserService userService,
                               ItemService itemService) {
         this.bookingRepository = bookingRepository;
-        this.bookingMapper = bookingMapper;
         this.userService = userService;
         this.itemService = itemService;
     }
@@ -45,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto create(PostBookingDto postBookingDto, Integer bookerId) {
 
-        User user = userService.findUserById(bookerId);
+        User user = UserMapper.mapToUser(userService.findUserById(bookerId));
 
         Integer itemId = postBookingDto.getItemId();
         Item item = itemService.findItemById(itemId);
@@ -75,7 +76,9 @@ public class BookingServiceImpl implements BookingService {
 
         bookingTimeValidation(booking);
 
-        return bookingMapper.toBookingDto(bookingRepository.save(booking));
+        List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
+
+        return BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
     }
 
     @Override
@@ -112,8 +115,10 @@ public class BookingServiceImpl implements BookingService {
                 throw new PermissionException("booking can be approved only by an owner");
             }
         }
+        Integer itemId = booking.getItem().getId();
+        List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
 
-        return bookingMapper.toBookingDto(bookingRepository.save(booking));
+        return BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
     }
 
     @Override
@@ -126,8 +131,11 @@ public class BookingServiceImpl implements BookingService {
         Integer bookerId = booking.getBooker().getId();
         Integer bookerItemId = booking.getItem().getId();
 
+        Integer itemId = booking.getItem().getId();
+        List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
+
         if (bookerId.equals(userId) || isItemOwner(bookerItemId, userId)) {
-            return bookingMapper.toBookingDto(booking);
+            return BookingMapper.toBookingDto(booking, comments);
         } else {
             log.error("BookingNotFoundException: Booking with id='{}' was not found.", bookingId);
             throw new BookingNotFoundException("Booking was not found");
@@ -138,34 +146,39 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getBookingList(String state, Integer userId) {
         userService.findUserById(userId);
 
+        BookingState listStates = stateToEnum(state);
         List<Booking> bookings;
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        switch (state) {
-            case "ALL":
+        switch (listStates) {
+            case ALL:
                 bookings = bookingRepository.findByBookerId(userId, sort);
                 break;
-            case "CURRENT":
+            case CURRENT:
                 bookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
                         LocalDateTime.now(), sort);
                 break;
-            case "PAST":
+            case PAST:
                 bookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), sort);
                 break;
-            case "FUTURE":
+            case FUTURE:
                 bookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), sort);
                 break;
-            case "WAITING":
+            case WAITING:
                 bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.WAITING, sort);
                 break;
-            case "REJECTED":
+            case REJECTED:
                 bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.REJECTED, sort);
                 break;
             default:
-                log.error("UnsupportedStatusException: unknown state='{}'", state);
-                throw new UnsupportedStatusException("Unknown state: " + state);
+                bookings = new ArrayList<>();
         }
+
         return bookings.stream()
-                .map(bookingMapper::toBookingDto)
+                .map(booking -> {
+                    Integer itemId = booking.getItem().getId();
+                    List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
+                    return BookingMapper.toBookingDto(booking, comments);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -173,47 +186,52 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getBookingsOwner(String state, Integer userId) {
         userService.findUserById(userId);
 
+        BookingState listStates = stateToEnum(state);
         List<Booking> bookings;
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        switch (state) {
-            case "ALL":
+        switch (listStates) {
+            case ALL:
                 bookings = bookingRepository.findByItem_Owner_Id(userId, sort);
                 break;
-            case "CURRENT":
+            case CURRENT:
                 bookings = bookingRepository.findByItem_Owner_IdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
                         LocalDateTime.now(), sort);
                 break;
-            case "PAST":
+            case PAST:
                 bookings = bookingRepository.findByItem_Owner_IdAndEndIsBefore(userId, LocalDateTime.now(), sort);
                 break;
-            case "FUTURE":
+            case FUTURE:
                 bookings = bookingRepository.findByItem_Owner_IdAndStartIsAfter(userId, LocalDateTime.now(),
                         sort);
                 break;
-            case "WAITING":
+            case WAITING:
                 bookings = bookingRepository.findByItem_Owner_IdAndStatus(userId, Status.WAITING, sort);
                 break;
-            case "REJECTED":
+            case REJECTED:
                 bookings = bookingRepository.findByItem_Owner_IdAndStatus(userId, Status.REJECTED, sort);
                 break;
             default:
-                log.error("UnsupportedStatusException: unknown state='{}'", state);
-                throw new UnsupportedStatusException("Unknown state: " + state);
+                bookings = new ArrayList<>();
         }
+
         return bookings.stream()
-                .map(bookingMapper::toBookingDto)
+                .map(booking -> {
+                    Integer itemId = booking.getItem().getId();
+                    List<CommentDto> comments = itemService.getCommentsByItemId(itemId);
+                    return BookingMapper.toBookingDto(booking, comments);
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
     public BookingShortDto getLastBooking(Integer itemId) {
-        return bookingMapper.toBookingShortDto(bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusNotOrderByStartDesc(itemId,
+        return BookingMapper.toBookingShortDto(bookingRepository.findFirstByItem_IdAndStartBeforeAndStatusNotOrderByStartDesc(itemId,
                 LocalDateTime.now(), Status.REJECTED));
     }
 
     @Override
     public BookingShortDto getNextBooking(Integer itemId) {
-        return bookingMapper.toBookingShortDto(bookingRepository.findFirstByItem_IdAndStartAfterAndStatusNotOrderByStart(
+        return BookingMapper.toBookingShortDto(bookingRepository.findFirstByItem_IdAndStartAfterAndStatusNotOrderByStart(
                 itemId, LocalDateTime.now(), Status.REJECTED));
     }
 
@@ -243,5 +261,17 @@ public class BookingServiceImpl implements BookingService {
     private BookingNotFoundException throwBookingNotFoundException(String message) {
         log.error(message);
         throw new BookingNotFoundException(message);
+    }
+
+    private BookingState stateToEnum(String stateParam) {
+        BookingState state;
+        try {
+            state = BookingState.valueOf(stateParam);
+        } catch (IllegalArgumentException e) {
+            String message = "Unknown state: UNSUPPORTED_STATUS";
+            log.error(message);
+            throw new UnsupportedStatusException(message);
+        }
+        return state;
     }
 }

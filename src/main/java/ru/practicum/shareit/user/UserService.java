@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user;
 
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -16,5 +15,5 @@ public interface UserService {
 
     List<UserDto> getUsers();
 
-    User findUserById(Integer userId);
+    UserDto findUserById(Integer userId);
 }

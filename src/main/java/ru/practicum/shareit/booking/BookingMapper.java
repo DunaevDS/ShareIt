@@ -1,29 +1,25 @@
 package ru.practicum.shareit.booking;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
+
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.coment.dto.CommentDto;
 import ru.practicum.shareit.user.UserMapper;
 
-@Component
+import java.util.List;
+
+@UtilityClass
 public class BookingMapper {
-    private final ItemMapper itemMapper;
-
-    @Autowired
-    public BookingMapper(ItemMapper itemMapper) {
-        this.itemMapper = itemMapper;
-    }
-
-    public BookingDto toBookingDto(Booking booking) {
+    public BookingDto toBookingDto(Booking booking, List<CommentDto> comments) {
         if (booking != null) {
             return new BookingDto(
                     booking.getId(),
                     booking.getStart(),
                     booking.getEnd(),
-                    itemMapper.mapToItemDto(booking.getItem()),
+                    ItemMapper.mapToItemDto(booking.getItem(), comments),
                     UserMapper.mapToUserDto(booking.getBooker()),
                     booking.getStatus()
             );

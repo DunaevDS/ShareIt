@@ -1,24 +1,18 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.item.coment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.service.ConnectingService;
+import ru.practicum.shareit.user.model.User;
 
-//не смог придумать как оставить утилитарным классом и привязать connecting service
-@Component
+import java.util.List;
+
+@UtilityClass
 public class ItemMapper {
-    private final ConnectingService connectingService;
 
-    @Autowired
-    @Lazy
-    public ItemMapper(ConnectingService connectingService) {
-        this.connectingService = connectingService;
-    }
-
-    public ItemDto mapToItemDto(Item item) {
+    public ItemDto mapToItemDto(Item item, List<CommentDto> comments) {
         return new ItemDto(
                 item.getId(),
                 item.getName(),
@@ -28,11 +22,14 @@ public class ItemMapper {
                 item.getRequestId() != null ? item.getRequestId() : null,
                 null,
                 null,
-                connectingService.getCommentsByItemId(item.getId())
+                comments
         );
     }
 
-    public ItemDto toItemWithBookingDto(Item item) {
+    public ItemDto toItemWithBookingDto(Item item,
+                                        BookingShortDto lastBooking,
+                                        BookingShortDto nextBooking,
+                                        List<CommentDto> comments) {
         return new ItemDto(
                 item.getId(),
                 item.getName(),
@@ -40,18 +37,18 @@ public class ItemMapper {
                 item.getAvailable(),
                 item.getOwner(),
                 item.getRequestId() != null ? item.getRequestId() : null,
-                connectingService.getLastBooking(item.getId()),
-                connectingService.getNextBooking(item.getId()),
-                connectingService.getCommentsByItemId(item.getId()));
+                lastBooking,
+                nextBooking,
+                comments);
     }
 
-    public Item mapToItem(ItemDto itemDto, Integer ownerId) {
+    public Item mapToItem(ItemDto itemDto, User owner) {
         return new Item(
                 itemDto.getId(),
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-                connectingService.findUserById(ownerId),
+                owner,
                 itemDto.getRequestId() != null ? itemDto.getRequestId() : null
         );
     }

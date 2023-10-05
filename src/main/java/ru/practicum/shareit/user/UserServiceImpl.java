@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.BookingNotFoundException;
 import ru.practicum.shareit.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -27,7 +28,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto create(UserDto userDto) {
         if (userDto == null) {
             log.error("EmptyObjectException: User is null.");
@@ -43,7 +43,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto update(UserDto userDto, Integer id) {
         if (userDto == null) {
             log.error("EmptyObjectException: User is null.");
@@ -53,12 +52,8 @@ public class UserServiceImpl implements UserService {
         validationUserUpdate(userDto);
         userDto.setId(id);
 
-        User user = userRepository.findById(id).orElse(null);
-
-        if (user == null) {
-            log.error("User with id = " + id + " was not found");
-            throw new UserNotFoundException("User with id = " + id + " was not found");
-        }
+        User user = userRepository.findById(id).orElseThrow(() -> throwUserNotFoundException(
+                "NotFoundException: Item with id= " + id + " was not found."));
 
         if (userDto.getName() != null) {
             user.setName(userDto.getName());
@@ -79,7 +74,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public void delete(Integer userId) {
         if (!userRepository.existsById(userId)) {
             log.error("NotFoundException: User with id='{}' was not found.", userId);
@@ -91,11 +85,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Integer userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            log.error("User with id = " + userId + " was not found");
-            throw new UserNotFoundException("User with id = " + userId + " was not found");
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> throwUserNotFoundException(
+                "NotFoundException: Item with id= " + userId + " was not found."));
 
         return UserMapper.mapToUserDto(user);
     }
@@ -108,14 +99,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserById(Integer userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            log.error("User with id = " + userId + " was not found");
-            throw new UserNotFoundException("User with id = " + userId + " was not found");
-        }
-
-        return user;
+    public UserDto findUserById(Integer userId) {
+        return UserMapper.mapToUserDto(userRepository.findById(userId).orElseThrow(() -> throwUserNotFoundException(
+                "NotFoundException: Item with id= " + userId + " was not found.")));
     }
 
     private void validationUserCreation(UserDto userDto) {
@@ -147,5 +133,10 @@ public class UserServiceImpl implements UserService {
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         return email.matches(emailRegex);
+    }
+
+    private UserNotFoundException throwUserNotFoundException(String message) {
+        log.error(message);
+        throw new BookingNotFoundException(message);
     }
 }
