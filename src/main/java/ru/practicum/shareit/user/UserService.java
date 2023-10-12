@@ -7,13 +7,13 @@ import java.util.List;
 public interface UserService {
     UserDto create(UserDto userDto);
 
-    UserDto update(UserDto userDto, int id);
+    UserDto update(UserDto userDto, Integer id);
 
-    UserDto delete(int userId);
+    void delete(Integer userId);
 
-    UserDto getUserById(int userId);
+    UserDto getUserById(Integer userId);
 
     List<UserDto> getUsers();
 
-    boolean existsById(int userId);
+    UserDto findUserById(Integer userId);
 }
