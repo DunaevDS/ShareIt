@@ -75,7 +75,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .map(itemRequest -> {
                     Integer id = itemRequest.getId();
                     List<ItemDto> itemsListByRequest = itemService.getItemsByRequestId(id);
-                    return  ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
+                    return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
                 })
                 .collect(toList());
     }
@@ -98,7 +98,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                             .map(itemRequest -> {
                                 Integer id = itemRequest.getId();
                                 List<ItemDto> itemsListByRequest = itemService.getItemsByRequestId(id);
-                                return  ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
+                                return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
                             })
                             .collect(toList()));
         } else {
@@ -110,7 +110,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                         .map(itemRequest -> {
                             Integer id = itemRequest.getId();
                             List<ItemDto> itemsListByRequest = itemService.getItemsByRequestId(id);
-                            return  ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
+                            return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
                         })
                         .collect(toList()));
                 if (!page.hasNext()) {

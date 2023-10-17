@@ -41,20 +41,20 @@ public class BookingControllerTest {
 
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
-    private PostBookingDto postBookingDto = new PostBookingDto(
+    private final PostBookingDto postBookingDto = new PostBookingDto(
             1,
-            LocalDateTime.of(2030, 12, 25, 12, 00, 00),
-            LocalDateTime.of(2030, 12, 26, 12, 00, 00));
+            LocalDateTime.of(2030, 12, 25, 12, 0, 0),
+            LocalDateTime.of(2030, 12, 26, 12, 0, 0));
 
-    private BookingDto bookingDto = new BookingDto(
+    private final BookingDto bookingDto = new BookingDto(
             1,
-            LocalDateTime.of(2030, 12, 25, 12, 00, 00),
-            LocalDateTime.of(2030, 12, 26, 12, 00, 00),
+            LocalDateTime.of(2030, 12, 25, 12, 0, 0),
+            LocalDateTime.of(2030, 12, 26, 12, 0, 0),
             new ItemDto(1, "FirstItem", "DescriptionOfFirstItem", true,
                     new User(1, "FirstUser", "first@email.ru"), null, null,
                     null, null),
             new UserDto(2, "SecondUser", "second@email.ru"), Status.WAITING);
-    private List listBookingDto = new ArrayList<>();
+    private final List<Object> listBookingDto = new ArrayList<>();
 
     @Test
     void createBooking() throws Exception {

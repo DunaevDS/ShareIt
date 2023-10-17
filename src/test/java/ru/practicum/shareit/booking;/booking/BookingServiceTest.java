@@ -29,12 +29,12 @@ public class BookingServiceTest {
     private final BookingService bookingService;
     private final UserService userService;
     private final ItemService itemService;
-    private User user = new User(30, "First", "first@first30.ru");
-    private UserDto userDto1 = new UserDto(301, "AlexOne", "alexone@alex30.ru");
-    private UserDto userDto2 = new UserDto(302, "AlexTwo", "alextwo@alex30.ru");
-    private ItemDto itemDto1 = new ItemDto(301, "Item1", "Description1", true,
+    private final User user = new User(30, "First", "first@first30.ru");
+    private final UserDto userDto1 = new UserDto(301, "AlexOne", "alexone@alex30.ru");
+    private final UserDto userDto2 = new UserDto(302, "AlexTwo", "alextwo@alex30.ru");
+    private final ItemDto itemDto1 = new ItemDto(301, "Item1", "Description1", true,
             user, null, null, null, null);
-    private ItemDto itemDto2 = new ItemDto(302, "Item2", "Description2", true,
+    private final ItemDto itemDto2 = new ItemDto(302, "Item2", "Description2", true,
             user, null, null, null, null);
 
     @Test

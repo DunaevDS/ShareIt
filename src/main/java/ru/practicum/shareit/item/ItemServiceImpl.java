@@ -187,7 +187,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsBySearchQuery(String text,  Integer from, Integer size) {
+    public List<ItemDto> getItemsBySearchQuery(String text, Integer from, Integer size) {
         List<ItemDto> listItemDto = new ArrayList<>();
         if ((text != null) && (!text.isEmpty()) && (!text.isBlank())) {
             text = text.toLowerCase();

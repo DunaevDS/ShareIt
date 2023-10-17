@@ -52,8 +52,6 @@ import static org.mockito.Mockito.when;
 
             when(mockBookingRepository.findById(bookingId)).thenReturn(Optional.empty());
 
-            assertThrows(BookingNotFoundException.class, () -> {
-                bookingService.getBookingById(bookingId, userId);
-            });
+            assertThrows(BookingNotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
         }
     }

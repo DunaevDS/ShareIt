@@ -53,8 +53,7 @@ import static org.mockito.Mockito.when;
 
             when(mockItemRequestRepository.findById(itemRequestId)).thenReturn(Optional.empty());
 
-            assertThrows(ItemRequestNotFoundException.class, () -> {
-                itemRequestService.getItemRequestById(itemRequestId, userId);
-            });
+            assertThrows(ItemRequestNotFoundException.class, () ->
+                    itemRequestService.getItemRequestById(itemRequestId, userId));
         }
     }
