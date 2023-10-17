@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.BookingNotFoundException;
 import ru.practicum.shareit.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -84,14 +83,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserById(Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> throwUserNotFoundException(
-                "NotFoundException: Item with id= " + userId + " was not found."));
-
-        return UserMapper.mapToUserDto(user);
-    }
-
-    @Override
     public List<UserDto> getUsers() {
         return userRepository.findAll().stream()
                 .map(UserMapper::mapToUserDto)
@@ -101,7 +92,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findUserById(Integer userId) {
         return UserMapper.mapToUserDto(userRepository.findById(userId).orElseThrow(() -> throwUserNotFoundException(
-                "NotFoundException: Item with id= " + userId + " was not found.")));
+                "NotFoundException: User with id= " + userId + " was not found.")));
     }
 
     private void validationUserCreation(UserDto userDto) {
@@ -137,6 +128,6 @@ public class UserServiceImpl implements UserService {
 
     private UserNotFoundException throwUserNotFoundException(String message) {
         log.error(message);
-        throw new BookingNotFoundException(message);
+        throw new UserNotFoundException(message);
     }
 }

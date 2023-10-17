@@ -68,4 +68,16 @@ public class ErrorHandler {
     public ErrorResponse handleUserCommentException(final UserCommentException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemRequestNotFoundException(final ItemRequestNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlePaginationException(final PaginationException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }

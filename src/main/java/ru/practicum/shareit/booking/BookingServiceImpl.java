@@ -2,6 +2,9 @@ package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -21,6 +24,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.util.Pagination;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -152,84 +156,165 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingList(String state, Integer userId) {
+    public List<BookingDto> getBookingList(String state, Integer userId, Integer from, Integer size) {
         userService.findUserById(userId);
+        List<BookingDto> listBookingDto = new ArrayList<>();
+        Pageable pageable;
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");;
+        Page<Booking> page;
+        Pagination pager = new Pagination(from, size);
 
+        if (size == null) {
+            pageable =
+                    PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
+            do {
+                page = getPageBookings(state, userId, pageable);
+
+                listBookingDto.addAll(page.stream()
+                        .map(booking -> {
+                            Integer itemId = booking.getItem().getId();
+                            List<CommentDto> comments = getCommentsByItemId(itemId);
+                            return BookingMapper.toBookingDto(booking, comments);
+                        })
+                        .collect(Collectors.toList()));
+
+                pageable = pageable.next();
+
+            } while (page.hasNext());
+
+        } else {
+            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
+                pageable =
+                        PageRequest.of(i, pager.getPageSize(), sort);
+
+                page = getPageBookings(state, userId, pageable);
+
+                listBookingDto.addAll(page.stream()
+                        .map(booking -> {
+                            Integer itemId = booking.getItem().getId();
+                            List<CommentDto> comments = getCommentsByItemId(itemId);
+                            return BookingMapper.toBookingDto(booking, comments);
+                        })
+                        .collect(Collectors.toList()));
+
+                if (!page.hasNext()) {
+                    break;
+                }
+            }
+            listBookingDto = listBookingDto.stream().limit(size).collect(toList());
+        }
+        return listBookingDto;
+    }
+
+    private Page<Booking> getPageBookings(String state, Integer userId, Pageable pageable) {
+        Page<Booking> page;
         BookingState listStates = stateToEnum(state);
-        List<Booking> bookings;
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
         switch (listStates) {
             case ALL:
-                bookings = bookingRepository.findByBookerId(userId, sort);
+                page = bookingRepository.findByBookerId(userId, pageable);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
-                        LocalDateTime.now(), sort);
+                page = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
+                        LocalDateTime.now(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), sort);
+                page = bookingRepository.findByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), sort);
+                page = bookingRepository.findByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.WAITING, sort);
+                page = bookingRepository.findByBookerIdAndStatus(userId, Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.REJECTED, sort);
+                page = bookingRepository.findByBookerIdAndStatus(userId, Status.REJECTED, pageable);
                 break;
             default:
-                bookings = new ArrayList<>();
+                throw new ValidationException("Unknown state: " + state);
         }
-
-        return bookings.stream()
-                .map(booking -> {
-                    Integer itemId = booking.getItem().getId();
-                    List<CommentDto> comments = getCommentsByItemId(itemId);
-                    return BookingMapper.toBookingDto(booking, comments);
-                })
-                .collect(Collectors.toList());
+        return page;
     }
 
     @Override
-    public List<BookingDto> getBookingsOwner(String state, Integer userId) {
+    public List<BookingDto> getBookingsOwner(String state, Integer userId, Integer from, Integer size) {
         userService.findUserById(userId);
 
+        List<BookingDto> listBookingDto = new ArrayList<>();
+        Pageable pageable;
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");;
+        Page<Booking> page;
+        Pagination pager = new Pagination(from, size);
+
+        if (size == null) {
+            pageable =
+                    PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
+            do {
+                page = getPageBookingsOwner(state, userId, pageable);
+
+                listBookingDto.addAll(page.stream()
+                        .map(booking -> {
+                            Integer itemId = booking.getItem().getId();
+                            List<CommentDto> comments = getCommentsByItemId(itemId);
+                            return BookingMapper.toBookingDto(booking, comments);
+                        })
+                        .collect(Collectors.toList()));
+
+                pageable = pageable.next();
+
+            } while (page.hasNext());
+
+        } else {
+            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
+                pageable =
+                        PageRequest.of(i, pager.getPageSize(), sort);
+
+                page = getPageBookingsOwner(state, userId, pageable);
+
+                listBookingDto.addAll(page.stream()
+                        .map(booking -> {
+                            Integer itemId = booking.getItem().getId();
+                            List<CommentDto> comments = getCommentsByItemId(itemId);
+                            return BookingMapper.toBookingDto(booking, comments);
+                        })
+                        .collect(Collectors.toList()));
+
+                if (!page.hasNext()) {
+                    break;
+                }
+            }
+            listBookingDto = listBookingDto.stream().limit(size).collect(toList());
+        }
+        return listBookingDto;
+    }
+
+    private Page<Booking> getPageBookingsOwner(String state, Integer userId, Pageable pageable) {
+        Page<Booking> page;
         BookingState listStates = stateToEnum(state);
-        List<Booking> bookings;
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
         switch (listStates) {
             case ALL:
-                bookings = bookingRepository.findByItem_Owner_Id(userId, sort);
+                page = bookingRepository.findByItem_Owner_Id(userId, pageable);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findByItem_Owner_IdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
-                        LocalDateTime.now(), sort);
+                page = bookingRepository.findByItem_Owner_IdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
+                        LocalDateTime.now(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findByItem_Owner_IdAndEndIsBefore(userId, LocalDateTime.now(), sort);
+                page = bookingRepository.findByItem_Owner_IdAndEndIsBefore(userId, LocalDateTime.now(), pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findByItem_Owner_IdAndStartIsAfter(userId, LocalDateTime.now(),
-                        sort);
+                page = bookingRepository.findByItem_Owner_IdAndStartIsAfter(userId, LocalDateTime.now(),
+                        pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.findByItem_Owner_IdAndStatus(userId, Status.WAITING, sort);
+                page = bookingRepository.findByItem_Owner_IdAndStatus(userId, Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findByItem_Owner_IdAndStatus(userId, Status.REJECTED, sort);
+                page = bookingRepository.findByItem_Owner_IdAndStatus(userId, Status.REJECTED, pageable);
                 break;
             default:
-                bookings = new ArrayList<>();
+                throw new ValidationException("Unknown state: " + state);
         }
-
-        return bookings.stream()
-                .map(booking -> {
-                    Integer itemId = booking.getItem().getId();
-                    List<CommentDto> comments = getCommentsByItemId(itemId);
-                    return BookingMapper.toBookingDto(booking, comments);
-                })
-                .collect(Collectors.toList());
+        return page;
     }
 
     @Override
@@ -251,7 +336,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private boolean isItemOwner(Integer itemId, Integer userId) {
-        List<ItemDto> items = itemRepository.findByOwnerId(userId).stream()
+        List<ItemDto> items = itemRepository.findByOwnerId(userId, Pageable.unpaged()).stream()
                 .map(item -> {
                     Integer id = item.getId();
                     List<CommentDto> comments = getCommentsByItemId(id);

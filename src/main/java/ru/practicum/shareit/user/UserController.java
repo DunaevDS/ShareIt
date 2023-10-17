@@ -30,7 +30,7 @@ public class UserController {
                 request.getQueryString()
         );
 
-        return userService.getUserById(userId);
+        return userService.findUserById(userId);
     }
 
     @ResponseBody

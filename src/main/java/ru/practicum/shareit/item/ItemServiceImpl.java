@@ -3,12 +3,14 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.exception.BookingNotFoundException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UserCommentException;
 import ru.practicum.shareit.item.coment.CommentMapper;
@@ -20,11 +22,11 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.util.Pagination;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -64,19 +66,56 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsByOwner(Integer ownerId) {
+    public List<ItemDto> getItemsByOwner(Integer ownerId, Integer from, Integer size) {
         userService.findUserById(ownerId);
 
-        return itemRepository.findByOwnerId(ownerId).stream()
-                .map(item -> {
-                    Integer itemId = item.getId();
-                    List<CommentDto> comments = getCommentsByItemId(itemId);
-                    BookingShortDto lastBooking = bookingService.getLastBooking(itemId);
-                    BookingShortDto nextBooking = bookingService.getNextBooking(itemId);
-                    return ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
-                })
-                .sorted(Comparator.comparing(ItemDto::getId))
-                .collect(toList());
+        List<ItemDto> listItemExtDto = new ArrayList<>();
+        Pageable pageable;
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Page<Item> page;
+        Pagination pager = new Pagination(from, size);
+
+
+        if (size == null) {
+            pageable =
+                    PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
+            do {
+                page = itemRepository.findByOwnerId(ownerId, pageable);
+                listItemExtDto.addAll(page.stream()
+                        .map(item -> {
+                            Integer itemId = item.getId();
+                            List<CommentDto> comments = getCommentsByItemId(itemId);
+                            BookingShortDto lastBooking = bookingService.getLastBooking(itemId);
+                            BookingShortDto nextBooking = bookingService.getNextBooking(itemId);
+                            return ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
+                        })
+                        //.sorted(Comparator.comparing(ItemDto::getId))
+                        .collect(toList()));
+                pageable = pageable.next();
+            } while (page.hasNext());
+
+        } else {
+            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
+                pageable =
+                        PageRequest.of(i, pager.getPageSize(), sort);
+                page = itemRepository.findByOwnerId(ownerId, pageable);
+                listItemExtDto.addAll(page.stream()
+                        .map(item -> {
+                            Integer itemId = item.getId();
+                            List<CommentDto> comments = getCommentsByItemId(itemId);
+                            BookingShortDto lastBooking = bookingService.getLastBooking(itemId);
+                            BookingShortDto nextBooking = bookingService.getNextBooking(itemId);
+                            return ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
+                        })
+                        //.sorted(Comparator.comparing(ItemDto::getId))
+                        .collect(toList()));
+                if (!page.hasNext()) {
+                    break;
+                }
+            }
+            listItemExtDto = listItemExtDto.stream().limit(size).collect(toList());
+        }
+        return listItemExtDto;
     }
 
     @Override
@@ -105,7 +144,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto update(ItemDto itemDto, Integer ownerId) {
         userService.findUserById(ownerId);
         Item item = itemRepository.findByIdAndOwnerId(itemDto.getId(), ownerId).orElseThrow(() -> throwItemNotFoundException(
-                "NotFoundException: Item with id= " + itemDto + " was not found."));
+                "NotFoundException: Item with id= " + itemDto.getId() + " was not found."));
 
         if (!itemRepository.existsById(itemDto.getId())) {
             log.error("NotFoundException: Item with id='{}' was not found.", itemDto.getId());
@@ -148,18 +187,50 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsBySearchQuery(String text) {
+    public List<ItemDto> getItemsBySearchQuery(String text,  Integer from, Integer size) {
+        List<ItemDto> listItemDto = new ArrayList<>();
         if ((text != null) && (!text.isEmpty()) && (!text.isBlank())) {
             text = text.toLowerCase();
+            Pageable pageable;
+            Sort sort = Sort.by(Sort.Direction.ASC, "name");
+            Page<Item> page;
+            Pagination pager = new Pagination(from, size);
 
-            return itemRepository.getItemsBySearchQuery(text).stream()
-                    .map(item -> {
-                        Integer itemId = item.getId();
-                        List<CommentDto> comments = getCommentsByItemId(itemId);
-                        return ItemMapper.mapToItemDto(item, comments);
-                    })
-                    .collect(toList());
-        } else return new ArrayList<>();
+            if (size == null) {
+                pageable =
+                        PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
+                do {
+                    page = itemRepository.getItemsBySearchQuery(text, pageable);
+                    listItemDto.addAll(page.stream()
+                            .map(item -> {
+                                Integer itemId = item.getId();
+                                List<CommentDto> comments = getCommentsByItemId(itemId);
+                                return ItemMapper.mapToItemDto(item, comments);
+                            })
+                            .collect(toList()));
+                    pageable = pageable.next();
+                } while (page.hasNext());
+
+            } else {
+                for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
+                    pageable =
+                            PageRequest.of(i, pager.getPageSize(), sort);
+                    page = itemRepository.getItemsBySearchQuery(text, pageable);
+                    listItemDto.addAll(page.stream()
+                            .map(item -> {
+                                Integer itemId = item.getId();
+                                List<CommentDto> comments = getCommentsByItemId(itemId);
+                                return ItemMapper.mapToItemDto(item, comments);
+                            })
+                            .collect(toList()));
+                    if (!page.hasNext()) {
+                        break;
+                    }
+                }
+                listItemDto = listItemDto.stream().limit(size).collect(toList());
+            }
+        }
+        return listItemDto;
     }
 
     @Override
@@ -187,8 +258,20 @@ public class ItemServiceImpl implements ItemService {
                 .collect(toList());
     }
 
+    @Override
+    public List<ItemDto> getItemsByRequestId(Integer requestId) {
+        return itemRepository.findAllByRequestId(requestId,
+                        Sort.by(Sort.Direction.DESC, "id")).stream()
+                .map(item -> {
+                    Integer itemId = item.getId();
+                    List<CommentDto> comments = getCommentsByItemId(itemId);
+                    return ItemMapper.mapToItemDto(item, comments);
+                })
+                .collect(toList());
+    }
+
     private ItemNotFoundException throwItemNotFoundException(String message) {
         log.error(message);
-        throw new BookingNotFoundException(message);
+        throw new ItemNotFoundException(message);
     }
 }

@@ -52,6 +52,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getItemsByOwner(@RequestHeader(owner) Integer ownerId,
+                                         @RequestParam(defaultValue = "0") Integer from,
+                                         @RequestParam(required = false) Integer size,
                                          HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(),
@@ -59,7 +61,7 @@ public class ItemController {
                 request.getQueryString()
         );
 
-        return itemService.getItemsByOwner(ownerId);
+        return itemService.getItemsByOwner(ownerId, from, size);
     }
 
     @ResponseBody
@@ -92,6 +94,8 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> getItemsBySearchQuery(@RequestParam String text,
+                                               @RequestParam(defaultValue = "0") Integer from,
+                                               @RequestParam(required = false) Integer size,
                                                HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(),
@@ -99,7 +103,7 @@ public class ItemController {
                 request.getQueryString()
         );
 
-        return itemService.getItemsBySearchQuery(text);
+        return itemService.getItemsBySearchQuery(text, from, size);
     }
 
     @ResponseBody
