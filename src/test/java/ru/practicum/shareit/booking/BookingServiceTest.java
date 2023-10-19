@@ -309,7 +309,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void test_GetBookingsByOwner_StatusСurrent_SizeNotNull() {
+    void test_GetBookingsByOwner_StatusCurrent_SizeNotNull() {
         UserDto ownerDto = userService.create(userDto1);
         UserDto newUserDto = userService.create(userDto2);
         ItemDto newItemDto = itemService.create(itemDto1, ownerDto.getId());
