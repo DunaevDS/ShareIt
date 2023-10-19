@@ -9,9 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.PostBookingDto;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.PaginationException;
-import ru.practicum.shareit.exception.UserCommentException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.item.coment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.model.User;
@@ -55,7 +54,7 @@ public class ItemServiceTest {
         UserDto ownerDto = userService.create(userDto1);
         UserDto newUserDto = userService.create(userDto2);
         ItemDto newItemDto = itemService.create(itemDto, ownerDto.getId());
-        ItemNotFoundException exp = assertThrows(ItemNotFoundException.class,
+        NotFoundException exp = assertThrows(NotFoundException.class,
                 () -> itemService.delete(newItemDto.getId(), newUserDto.getId()));
         assertEquals("User with id= " + newUserDto.getId() + " dont have item with id= " + newItemDto.getId(),
                 exp.getMessage());
@@ -66,7 +65,7 @@ public class ItemServiceTest {
         UserDto ownerDto = userService.create(userDto1);
         ItemDto newItemDto = itemService.create(itemDto, ownerDto.getId());
         itemService.delete(newItemDto.getId(), ownerDto.getId());
-        ItemNotFoundException exp = assertThrows(ItemNotFoundException.class,
+        NotFoundException exp = assertThrows(NotFoundException.class,
                 () -> itemService.getItemById(newItemDto.getId(), ownerDto.getId()));
         assertEquals("NotFoundException: Item with id= " + newItemDto.getId() + " was not found.",
                 exp.getMessage());
@@ -75,7 +74,7 @@ public class ItemServiceTest {
     @Test
     void test_ExceptionWhenDeleteItemNotExist() {
         UserDto ownerDto = userService.create(userDto1);
-        ItemNotFoundException exp = assertThrows(ItemNotFoundException.class,
+        NotFoundException exp = assertThrows(NotFoundException.class,
                 () -> itemService.delete(-2, ownerDto.getId()));
         assertEquals("NotFoundException: Item with id= -2 was not found.", exp.getMessage());
     }
@@ -98,7 +97,7 @@ public class ItemServiceTest {
         UserDto ownerDto = userService.create(userDto1);
         UserDto newUserDto = userService.create(userDto2);
         ItemDto newItemDto = itemService.create(itemDto, ownerDto.getId());
-        ItemNotFoundException exp = assertThrows(ItemNotFoundException.class,
+        NotFoundException exp = assertThrows(NotFoundException.class,
                 () -> itemService.update(newItemDto, newUserDto.getId()));
         assertEquals("NotFoundException: Item with id= " + newItemDto.getId() + " was not found.",
                 exp.getMessage());
@@ -118,7 +117,7 @@ public class ItemServiceTest {
         UserDto ownerDto = userService.create(userDto1);
         itemService.create(itemDto, ownerDto.getId());
         itemService.create(itemDto2, ownerDto.getId());
-        assertThrows(PaginationException.class,
+        assertThrows(BadRequestException.class,
                 () -> itemService.getItemsByOwner(ownerDto.getId(), 0, -1));
     }
 
@@ -151,7 +150,7 @@ public class ItemServiceTest {
                 newUserDto.getName(),
                 LocalDateTime.now()
         );
-        UserCommentException exp = assertThrows(UserCommentException.class,
+        BadRequestException exp = assertThrows(BadRequestException.class,
                 () -> itemService.createComment(commentDto.getText(), itemDto.getId(), newUserDto.getId()));
         assertEquals("User with id= " + newUserDto.getId() + " did not book item with id= " + itemDto.getId(),
                 exp.getMessage());

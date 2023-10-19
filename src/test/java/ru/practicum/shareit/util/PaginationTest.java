@@ -1,7 +1,7 @@
 package ru.practicum.shareit.util;
 
 import org.junit.jupiter.api.Test;
-import ru.practicum.shareit.exception.PaginationException;
+import ru.practicum.shareit.exception.BadRequestException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -11,21 +11,21 @@ public class PaginationTest {
     public void test_SizeNotPositive() {
         Integer from = 0;
         Integer size = -1;
-        assertThrows(PaginationException.class, () -> new Pagination(from, size));
+        assertThrows(BadRequestException.class, () -> new Pagination(from, size));
     }
 
     @Test
     public void test_FromNotPositive() {
         Integer from = -1;
         Integer size = 1;
-        assertThrows(PaginationException.class, () -> new Pagination(from, size));
+        assertThrows(BadRequestException.class, () -> new Pagination(from, size));
     }
 
     @Test
     public void test_SizeIsZero() {
         Integer from = 0;
         Integer size = 0;
-        assertThrows(PaginationException.class, () -> new Pagination(from, size));
+        assertThrows(BadRequestException.class, () -> new Pagination(from, size));
     }
 
     @Test

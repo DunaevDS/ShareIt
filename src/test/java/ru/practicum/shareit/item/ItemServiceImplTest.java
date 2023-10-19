@@ -10,7 +10,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.dto.PostBookingDto;
-import ru.practicum.shareit.exception.ItemNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.coment.CommentRepository;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
@@ -53,15 +53,15 @@ public class ItemServiceImplTest {
         when(mockItemRepository.findById(any(Integer.class)))
                 .thenReturn(Optional.empty());
         int itemId = -1;
-        final ItemNotFoundException exception = assertThrows(
-                ItemNotFoundException.class,
+        final NotFoundException exception = assertThrows(
+                NotFoundException.class,
                 () -> itemService.getItemById(itemId, 1));
         assertEquals("NotFoundException: Item with id= " + itemId + " was not found.",
                 exception.getMessage());
     }
 
     @Test
-    void create_ThrowsItemNotFoundException_WhenItemDtoIsNull() {
+    void create_ThrowsNotFoundException_WhenItemDtoIsNull() {
         ItemService itemService = new ItemServiceImpl(
                 mockItemRepository,
                 mockUserService,
@@ -69,11 +69,11 @@ public class ItemServiceImplTest {
                 mockBookingService
         );
 
-        assertThrows(ItemNotFoundException.class, () -> itemService.create(null, 1));
+        assertThrows(NotFoundException.class, () -> itemService.create(null, 1));
     }
 
     @Test
-    void create_ThrowsItemNotFoundException_WhenItemNotFound() {
+    void create_ThrowsNotFoundException_WhenItemNotFound() {
         Integer bookerId = 1;
         Integer itemId = 1;
 
@@ -91,11 +91,11 @@ public class ItemServiceImplTest {
                 mockCommentRepository
         );
 
-        assertThrows(ItemNotFoundException.class, () -> bookingService.create(postBookingDto, bookerId));
+        assertThrows(NotFoundException.class, () -> bookingService.create(postBookingDto, bookerId));
     }
 
     @Test
-    void delete_ThrowsItemNotFoundException_WhenItemNotFound() {
+    void delete_ThrowsNotFoundException_WhenItemNotFound() {
         Integer itemId = 4;
         Integer ownerId = 1;
         lenient().doThrow(EmptyResultDataAccessException.class).when(mockItemRepository).deleteById(itemId);
@@ -107,6 +107,6 @@ public class ItemServiceImplTest {
                 mockBookingService
         );
 
-        assertThrows(ItemNotFoundException.class, () -> itemService.delete(itemId, ownerId));
+        assertThrows(NotFoundException.class, () -> itemService.delete(itemId, ownerId));
     }
 }

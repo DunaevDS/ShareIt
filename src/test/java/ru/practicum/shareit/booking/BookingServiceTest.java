@@ -7,9 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.PostBookingDto;
-import ru.practicum.shareit.exception.BookingNotFoundException;
-import ru.practicum.shareit.exception.UnsupportedStatusException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.InternalServerErrorException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.model.User;
@@ -46,7 +45,7 @@ public class BookingServiceTest {
                 newItemDto.getId(),
                 LocalDateTime.of(2030, 12, 25, 12, 0, 0),
                 LocalDateTime.of(2030, 12, 26, 12, 0, 0));
-        UserNotFoundException exp = assertThrows(UserNotFoundException.class,
+        NotFoundException exp = assertThrows(NotFoundException.class,
                 () -> bookingService.create(bookingInputDto, ownerDto.getId()));
         assertEquals("Item with id= " + newItemDto.getId() + " can not be booked by owner",
                 exp.getMessage());
@@ -65,7 +64,7 @@ public class BookingServiceTest {
                 LocalDateTime.of(2030, 12, 25, 12, 0, 0),
                 LocalDateTime.of(2030, 12, 26, 12, 0, 0));
         BookingDto bookingDto = bookingService.create(bookingInputDto, newUserDto.getId());
-        BookingNotFoundException exp = assertThrows(BookingNotFoundException.class,
+        NotFoundException exp = assertThrows(NotFoundException.class,
                 () -> bookingService.getBookingById(bookingDto.getId(), userId));
         assertEquals("Booking was not found", exp.getMessage());
     }
@@ -344,7 +343,7 @@ public class BookingServiceTest {
                 LocalDateTime.of(2031, 12, 26, 12, 0, 0));
         bookingService.create(bookingInputDto1, newUserDto.getId());
 
-        UnsupportedStatusException exp = assertThrows(UnsupportedStatusException.class,
+        InternalServerErrorException exp = assertThrows(InternalServerErrorException.class,
                 () -> bookingService.getBookingsOwner("UNKNOWN", ownerDto.getId(),
                         0, 1));
         assertEquals("Unknown state: UNSUPPORTED_STATUS", exp.getMessage());

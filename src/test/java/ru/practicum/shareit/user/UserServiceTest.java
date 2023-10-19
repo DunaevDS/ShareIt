@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.UserAlreadyExistsException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ConflictException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -35,7 +35,7 @@ class UserServiceTest {
 
     @Test
     void test_DeleteUserWithWrongId() {
-        UserNotFoundException exp = assertThrows(UserNotFoundException.class, () -> userService.delete(10));
+        NotFoundException exp = assertThrows(NotFoundException.class, () -> userService.delete(10));
         assertEquals("User was not found", exp.getMessage());
     }
 
@@ -71,8 +71,8 @@ class UserServiceTest {
         returnUserDto.setId(null);
         returnUserDto.setEmail("bestKotlinProgrammer@yandex.ru");
 
-        final UserAlreadyExistsException exception = Assertions.assertThrows(
-                UserAlreadyExistsException.class,
+        final ConflictException exception = Assertions.assertThrows(
+                ConflictException.class,
                 () -> userService.update(returnUserDto, id));
 
         Assertions.assertEquals("User with email = " + returnUserDto.getEmail() + " already exists",

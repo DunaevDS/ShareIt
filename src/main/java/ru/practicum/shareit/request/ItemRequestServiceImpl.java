@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -58,8 +58,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userService.findUserById(userId);
 
         ItemRequest itemRequest = repository.findById(itemRequestId)
-                .orElseThrow(() -> throwItemRequestNotFoundException(
-                        "ItemRequestNotFoundException: request with id=" + itemRequestId + " was not found."));
+                .orElseThrow(() -> throwNotFoundException(
+                        "NotFoundException: request with id=" + itemRequestId + " was not found."));
 
         List<ItemDto> itemsListByRequest = itemService.getItemsByRequestId(itemRequestId);
 
@@ -124,8 +124,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return listItemRequestDto;
     }
 
-    private ItemRequestNotFoundException throwItemRequestNotFoundException(String message) {
+    private NotFoundException throwNotFoundException(String message) {
         log.error(message);
-        throw new ItemRequestNotFoundException(message);
+        throw new NotFoundException(message);
     }
 }

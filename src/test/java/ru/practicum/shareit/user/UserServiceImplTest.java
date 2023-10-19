@@ -11,9 +11,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import ru.practicum.shareit.exception.UserAlreadyExistsException;
-import ru.practicum.shareit.exception.UserNotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.exception.ConflictException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -43,8 +42,8 @@ public class UserServiceImplTest {
         when(mockUserRepository.findById(any(Integer.class)))
                 .thenReturn(Optional.empty());
 
-        final UserNotFoundException exception = assertThrows(
-                UserNotFoundException.class,
+        final NotFoundException exception = assertThrows(
+                NotFoundException.class,
 
                 () -> userService.findUserById(-1));
         Assertions.assertEquals("NotFoundException: User with id= -1 was not found.", exception.getMessage());
@@ -55,8 +54,8 @@ public class UserServiceImplTest {
         when(mockUserRepository.save(any()))
                 .thenThrow(new DataIntegrityViolationException(""));
 
-        final UserAlreadyExistsException exception = assertThrows(
-                UserAlreadyExistsException.class,
+        final ConflictException exception = assertThrows(
+                ConflictException.class,
                 () -> userService.create(userDto));
 
         Assertions.assertEquals("User with email = " + userDto.getEmail() + " already exists",
@@ -78,15 +77,15 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void create_ThrowsValidationException_WhenInvalidEmail() {
+    void create_ThrowsConflictException_WhenInvalidEmail() {
         userDto.setEmail("invalidEmail@@");
-        assertThrows(ValidationException.class, () -> userService.create(userDto));
+        assertThrows(ConflictException.class, () -> userService.create(userDto));
     }
 
     @Test
-    void create_ThrowsValidationException_WhenInvalidName() {
+    void create_ThrowsConflictException_WhenInvalidName() {
         userDto.setName(" ");
-        assertThrows(ValidationException.class, () -> userService.update(userDto, userDto.getId()));
+        assertThrows(ConflictException.class, () -> userService.update(userDto, userDto.getId()));
     }
 
 }

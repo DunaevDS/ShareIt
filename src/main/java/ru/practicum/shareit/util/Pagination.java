@@ -2,7 +2,7 @@ package ru.practicum.shareit.util;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import ru.practicum.shareit.exception.PaginationException;
+import ru.practicum.shareit.exception.BadRequestException;
 
 @Getter
 @Slf4j
@@ -15,12 +15,12 @@ public class Pagination {
     public Pagination(Integer from, Integer size) {
         if (size != null) {
             if ((from < 0) || (size < 0)) {
-                log.error("ValidationException: values from ={}, size={} can not be less than 0", from, size);
-                throw new PaginationException("values from=" + from + " , size=" + size + " can not be less than 0");
+                log.error("ConflictException: values from ={}, size={} can not be less than 0", from, size);
+                throw new BadRequestException("values from=" + from + " , size=" + size + " can not be less than 0");
             }
             if (size.equals(0)) {
-                log.error("ValidationException: value size={} should be more than 0", size);
-                throw new PaginationException("value size=" + size + " should be more than 0");
+                log.error("ConflictException: value size={} should be more than 0", size);
+                throw new BadRequestException("value size=" + size + " should be more than 0");
             }
         }
         pageSize = from;

@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.UserCommentException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.item.coment.CommentMapper;
 import ru.practicum.shareit.item.coment.CommentRepository;
 import ru.practicum.shareit.item.coment.dto.CommentDto;
@@ -55,8 +55,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(ItemDto itemDto, Integer ownerId) {
         if (itemDto == null) {
-            log.error("ItemNotFoundException: Item is null.");
-            throw new ItemNotFoundException("Item was not provided");
+            log.error("NotFoundException: Item is null.");
+            throw new NotFoundException("Item was not provided");
         }
         User owner = UserMapper.mapToUser(userService.findUserById(ownerId));
 
@@ -119,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getItemById(Integer itemId, Integer userId) {
         ItemDto itemDto;
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> throwItemNotFoundException(
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> throwNotFoundException(
                 "NotFoundException: Item with id= " + itemId + " was not found."));
 
         BookingShortDto lastBooking = bookingService.getLastBooking(itemId);
@@ -128,7 +128,7 @@ public class ItemServiceImpl implements ItemService {
 
         if (item == null) {
             log.error("NotFoundException: Item with id='{}' was not found.", itemId);
-            throw new ItemNotFoundException("Item was not found");
+            throw new NotFoundException("Item was not found");
         }
         if (userId.equals(item.getOwner().getId())) {
             itemDto = ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
@@ -141,16 +141,16 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto update(ItemDto itemDto, Integer ownerId) {
         userService.findUserById(ownerId);
-        Item item = itemRepository.findByIdAndOwnerId(itemDto.getId(), ownerId).orElseThrow(() -> throwItemNotFoundException(
+        Item item = itemRepository.findByIdAndOwnerId(itemDto.getId(), ownerId).orElseThrow(() -> throwNotFoundException(
                 "NotFoundException: Item with id= " + itemDto.getId() + " was not found."));
 
         if (!itemRepository.existsById(itemDto.getId())) {
             log.error("NotFoundException: Item with id='{}' was not found.", itemDto.getId());
-            throw new ItemNotFoundException("Item was not found");
+            throw new NotFoundException("Item was not found");
         }
         if (!item.getOwner().getId().equals(ownerId)) {
             log.error("NotFoundException: User with id='{}' dont have item with id='{}'", ownerId, itemDto.getId());
-            throw new ItemNotFoundException("User with id= " + ownerId + " dont have item with id= " + itemDto.getId());
+            throw new NotFoundException("User with id= " + ownerId + " dont have item with id= " + itemDto.getId());
         }
         if (itemDto.getName() != null) {
             item.setName(itemDto.getName());
@@ -169,12 +169,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void delete(Integer itemId, Integer ownerId) {
         userService.findUserById(ownerId);
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> throwItemNotFoundException(
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> throwNotFoundException(
                 "NotFoundException: Item with id= " + itemId + " was not found."));
 
         if (!item.getOwner().getId().equals(ownerId)) {
             log.error("NotFoundException: User with id='{}' dont have item with id='{}'", ownerId, itemId);
-            throw new ItemNotFoundException("User with id= " + ownerId + " dont have item with id= " + itemId);
+            throw new NotFoundException("User with id= " + ownerId + " dont have item with id= " + itemId);
         }
         try {
             itemRepository.deleteById(itemId);
@@ -242,8 +242,8 @@ public class ItemServiceImpl implements ItemService {
             comment.setAuthor(booking.getBooker());
             comment.setText(commentDtoText);
         } else {
-            log.error("ValidationException: User with id='{}' did not book item with id='{}'", userId, itemId);
-            throw new UserCommentException("User with id= " + userId + " did not book item with id= " + itemId);
+            log.error("ConflictException: User with id='{}' did not book item with id='{}'", userId, itemId);
+            throw new BadRequestException("User with id= " + userId + " did not book item with id= " + itemId);
         }
         return CommentMapper.mapToCommentDto(commentRepository.save(comment));
     }
@@ -268,8 +268,8 @@ public class ItemServiceImpl implements ItemService {
                 .collect(toList());
     }
 
-    private ItemNotFoundException throwItemNotFoundException(String message) {
+    private NotFoundException throwNotFoundException(String message) {
         log.error(message);
-        throw new ItemNotFoundException(message);
+        throw new NotFoundException(message);
     }
 }

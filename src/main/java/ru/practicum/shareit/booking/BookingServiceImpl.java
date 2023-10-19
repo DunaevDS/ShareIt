@@ -61,21 +61,21 @@ public class BookingServiceImpl implements BookingService {
         User user = UserMapper.mapToUser(userService.findUserById(bookerId));
 
         Integer itemId = postBookingDto.getItemId();
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> throwItemNotFoundException(
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> throwNotFoundException(
                 "NotFoundException: Item with id= " + itemId + " was not found."));
         boolean isAvailable = item.getAvailable();
 
         Integer bookingOwnerId = item.getOwner().getId();
 
         if (bookerId.equals(bookingOwnerId)) {
-            log.error("PermissionException: Item with id='{}' can not be booked by owner", itemId);
-            throw new UserNotFoundException("Item with id= " + itemId +
+            log.error("BadRequestException: Item with id='{}' can not be booked by owner", itemId);
+            throw new NotFoundException("Item with id= " + itemId +
                     " can not be booked by owner");
         }
 
         if (!isAvailable) {
-            log.error("ValidationException: Item with id='{}' can not be booked.", itemId);
-            throw new PermissionException("Item with id = " + itemId + " can not be booked");
+            log.error("ConflictException: Item with id='{}' can not be booked.", itemId);
+            throw new BadRequestException("Item with id = " + itemId + " can not be booked");
         }
 
         Booking booking = new Booking(
@@ -98,8 +98,8 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto update(Integer bookingId, Integer userId, Boolean approved) {
         userService.findUserById(userId);
 
-        Booking booking = bookingRepository.findByIdAndItem_Owner_Id(bookingId, userId).orElseThrow(() -> throwBookingNotFoundException(
-                "BookingNotFoundException: Booking with id=" + bookingId + " was not found."));
+        Booking booking = bookingRepository.findByIdAndItem_Owner_Id(bookingId, userId).orElseThrow(() -> throwNotFoundException(
+                "NotFoundException: Booking with id=" + bookingId + " was not found."));
 
         bookingTimeValidation(booking);
 
@@ -108,8 +108,8 @@ public class BookingServiceImpl implements BookingService {
         if ((isItemOwner(bookerItemId, userId))
                 && (!booking.getStatus().equals(Status.CANCELED))) {
             if (!booking.getStatus().equals(Status.WAITING)) {
-                log.error("BookingAlreadyApprovedException: Booking was made already");
-                throw new BookingAlreadyApprovedException("Booking was made already");
+                log.error("BadRequestException: Booking was made already");
+                throw new BadRequestException("Booking was made already");
             }
             if (approved) {
                 booking.setStatus(Status.APPROVED);
@@ -120,12 +120,12 @@ public class BookingServiceImpl implements BookingService {
             }
         } else {
             if (booking.getStatus().equals(Status.CANCELED)) {
-                log.error("ValidationException: booking with id='{}' was cancelled", bookingId);
-                throw new ValidationException("Booking with id= " + bookingId + " was cancelled");
+                log.error("ConflictException: booking with id='{}' was cancelled", bookingId);
+                throw new ConflictException("Booking with id= " + bookingId + " was cancelled");
             } else {
-                log.error("PermissionException: user with id='{}' is not an owner. " +
+                log.error("BadRequestException: user with id='{}' is not an owner. " +
                         "Booking can be approved only by an owner", userId);
-                throw new PermissionException("booking can be approved only by an owner");
+                throw new BadRequestException("booking can be approved only by an owner");
             }
         }
         Integer itemId = booking.getItem().getId();
@@ -138,8 +138,8 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getBookingById(Integer bookingId, Integer userId) {
         userService.findUserById(userId);
 
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> throwBookingNotFoundException(
-                "BookingNotFoundException: Booking with id=" + bookingId + " was not found."));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> throwNotFoundException(
+                "NotFoundException: Booking with id=" + bookingId + " was not found."));
 
         Integer bookerId = booking.getBooker().getId();
         Integer bookerItemId = booking.getItem().getId();
@@ -150,8 +150,8 @@ public class BookingServiceImpl implements BookingService {
         if (bookerId.equals(userId) || isItemOwner(bookerItemId, userId)) {
             return BookingMapper.toBookingDto(booking, comments);
         } else {
-            log.error("BookingNotFoundException: Booking with id='{}' was not found.", bookingId);
-            throw new BookingNotFoundException("Booking was not found");
+            log.error("NotFoundException: Booking with id='{}' was not found.", bookingId);
+            throw new NotFoundException("Booking was not found");
         }
     }
 
@@ -230,7 +230,7 @@ public class BookingServiceImpl implements BookingService {
                 page = bookingRepository.findByBookerIdAndStatus(userId, Status.REJECTED, pageable);
                 break;
             default:
-                throw new ValidationException("Unknown state: " + state);
+                throw new ConflictException("Unknown state: " + state);
         }
         return page;
     }
@@ -312,7 +312,7 @@ public class BookingServiceImpl implements BookingService {
                 page = bookingRepository.findByItem_Owner_IdAndStatus(userId, Status.REJECTED, pageable);
                 break;
             default:
-                throw new ValidationException("Unknown state: " + state);
+                throw new ConflictException("Unknown state: " + state);
         }
         return page;
     }
@@ -356,14 +356,14 @@ public class BookingServiceImpl implements BookingService {
                 || booking.getEnd().isBefore(booking.getStart())
                 || booking.getStart().isAfter(booking.getEnd())
                 || booking.getStart().equals(booking.getEnd())) {
-            log.error("IncorrectDateException");
-            throw new IncorrectDateException("IncorrectDateException");
+            log.error("BadRequestException");
+            throw new BadRequestException("BadRequestException");
         }
     }
 
-    private BookingNotFoundException throwBookingNotFoundException(String message) {
+    private NotFoundException throwNotFoundException(String message) {
         log.error(message);
-        throw new BookingNotFoundException(message);
+        throw new NotFoundException(message);
     }
 
     private BookingState stateToEnum(String stateParam) {
@@ -373,14 +373,9 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             String message = "Unknown state: UNSUPPORTED_STATUS";
             log.error(message);
-            throw new UnsupportedStatusException(message);
+            throw new InternalServerErrorException(message);
         }
         return state;
-    }
-
-    private ItemNotFoundException throwItemNotFoundException(String message) {
-        log.error(message);
-        throw new ItemNotFoundException(message);
     }
 
     private List<CommentDto> getCommentsByItemId(Integer itemId) {

@@ -9,8 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.enums.Status;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exception.BookingNotFoundException;
-import ru.practicum.shareit.exception.IncorrectDateException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.coment.CommentRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -55,11 +55,11 @@ public class BookingServiceImplTest {
 
         when(mockBookingRepository.findById(bookingId)).thenReturn(Optional.empty());
 
-        assertThrows(BookingNotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
+        assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
     }
 
         /*@Test
-        void update_ThrowsValidationException_WhenBookingIsCancelled() {
+        void update_ThrowsConflictException_WhenBookingIsCancelled() {
             Integer bookingId = 1;
             Integer userId = 1;
             Integer ownerId = 2;
@@ -72,13 +72,13 @@ public class BookingServiceImplTest {
             when(mockUserService.findUserById(userId)).thenReturn(UserMapper.mapToUserDto(user));
             when(mockBookingRepository.findByIdAndItem_Owner_Id(bookingId, userId)).thenReturn(Optional.of(booking));
 
-            assertThrows(ValidationException.class, () -> bookingService.update(bookingId, userId, approved));
+            assertThrows(ConflictException.class, () -> bookingService.update(bookingId, userId, approved));
 
             verify(mockBookingRepository, never()).save(any(Booking.class));
         }*/
 
     @Test
-    void test_IncorrectDateException() {
+    void test_BadRequestException() {
         Integer bookingId = 1;
         Integer userId = 2;
         Boolean approved = true;
@@ -90,11 +90,11 @@ public class BookingServiceImplTest {
         booking.setItem(item);
         when(mockUserService.findUserById(userId)).thenReturn(new UserDto(userId, "Apollon", "apollo@yandex.ru"));
         when(mockBookingRepository.findByIdAndItem_Owner_Id(any(), any())).thenReturn(Optional.of(booking));
-        assertThrows(IncorrectDateException.class, () -> bookingService.update(bookingId, userId, approved));
+        assertThrows(BadRequestException.class, () -> bookingService.update(bookingId, userId, approved));
     }
 
         /*@Test
-        void update_ThrowsPermissionException_WhenBookingIsRejectedByNonOwner() {
+        void update_ThrowsBadRequestException_WhenBookingIsRejectedByNonOwner() {
             Integer bookingId = 1;
             Integer userId = 1;
             Integer ownerId = 2;
@@ -107,13 +107,13 @@ public class BookingServiceImplTest {
             when(mockUserService.findUserById(userId)).thenReturn(UserMapper.mapToUserDto(user));
             when(mockBookingRepository.findByIdAndItem_Owner_Id(bookingId, userId)).thenReturn(Optional.of(booking));
 
-            assertThrows(PermissionException.class, () -> bookingService.update(bookingId, userId, approved));
+            assertThrows(BadRequestException.class, () -> bookingService.update(bookingId, userId, approved));
 
             verify(mockBookingRepository, never()).save(any(Booking.class));
         }*/
 
         /*@Test
-        void update_ThrowsBookingAlreadyApprovedException_WhenBookingStatusIsNotWaiting() {
+        void update_ThrowsBadRequestException_WhenBookingStatusIsNotWaiting() {
             Integer bookingId = 1;
             Integer userId = 1;
             Integer ownerId = 2;
@@ -132,7 +132,7 @@ public class BookingServiceImplTest {
             when(mockUserService.findUserById(userId)).thenReturn(UserMapper.mapToUserDto(user));
             when(mockBookingRepository.findByIdAndItem_Owner_Id(bookingId, userId)).thenReturn(Optional.of(booking));
 
-            assertThrows(BookingAlreadyApprovedException.class, () -> bookingService.update(bookingId, userId, approved));
+            assertThrows(BadRequestException.class, () -> bookingService.update(bookingId, userId, approved));
 
             verify(mockBookingRepository, never()).save(any(Booking.class));
         }*/

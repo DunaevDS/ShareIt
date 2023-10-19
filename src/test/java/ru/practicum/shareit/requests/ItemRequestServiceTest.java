@@ -5,8 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.ItemRequestNotFoundException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.ItemRequestService;
@@ -55,7 +54,7 @@ public class ItemRequestServiceTest {
     @Test
     void test_ExceptionWhenCreateItemRequestWithWrongUserId() {
         int requesterId = -2;
-        UserNotFoundException exp = assertThrows(UserNotFoundException.class,
+        NotFoundException exp = assertThrows(NotFoundException.class,
                 () -> itemRequestService.create(itemRequestDto, requesterId,
                         LocalDateTime.of(2024, 1, 2, 3, 4, 5)));
         assertEquals("NotFoundException: User with id= " + requesterId + " was not found.", exp.getMessage());
@@ -65,9 +64,9 @@ public class ItemRequestServiceTest {
     void test_ExceptionWhenGetItemRequestWithWrongId() {
         int itemRequestId = -2;
         UserDto firstUserDto = userService.create(userDto1);
-        ItemRequestNotFoundException exp = assertThrows(ItemRequestNotFoundException.class,
+        NotFoundException exp = assertThrows(NotFoundException.class,
                 () -> itemRequestService.getItemRequestById(itemRequestId, firstUserDto.getId()));
-        assertEquals("ItemRequestNotFoundException: request with id=" + itemRequestId + " was not found.",
+        assertEquals("NotFoundException: request with id=" + itemRequestId + " was not found.",
                 exp.getMessage());
     }
 
