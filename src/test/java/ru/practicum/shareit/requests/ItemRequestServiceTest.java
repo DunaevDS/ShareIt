@@ -58,8 +58,7 @@ public class ItemRequestServiceTest {
         UserNotFoundException exp = assertThrows(UserNotFoundException.class,
                 () -> itemRequestService.create(itemRequestDto, requesterId,
                         LocalDateTime.of(2024, 1, 2, 3, 4, 5)));
-        assertEquals("NotFoundException: User with id= " + requesterId + " was not found."
-                , exp.getMessage());
+        assertEquals("NotFoundException: User with id= " + requesterId + " was not found.", exp.getMessage());
     }
 
     @Test

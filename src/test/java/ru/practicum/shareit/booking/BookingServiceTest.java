@@ -327,6 +327,7 @@ public class BookingServiceTest {
                 0, 1);
         assertEquals(0, listBookings.size());
     }
+
     @Test
     void test_GetBookingsByOwner_StatusUnknown() {
         UserDto ownerDto = userService.create(userDto1);
@@ -344,7 +345,7 @@ public class BookingServiceTest {
         bookingService.create(bookingInputDto1, newUserDto.getId());
 
         UnsupportedStatusException exp = assertThrows(UnsupportedStatusException.class,
-                () ->  bookingService.getBookingsOwner("UNKNOWN", ownerDto.getId(),
+                () -> bookingService.getBookingsOwner("UNKNOWN", ownerDto.getId(),
                         0, 1));
         assertEquals("Unknown state: UNSUPPORTED_STATUS", exp.getMessage());
     }
