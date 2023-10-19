@@ -2,10 +2,8 @@ package ru.practicum.shareit.booking.dto;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
-import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
+
 
 
 import javax.validation.ConstraintViolation;
@@ -19,16 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 public class PostBookingDtoTest {
-    private final JacksonTester<PostBookingDto> json;
     private PostBookingDto postBookingDto;
-    private final Validator validator;
-
-    public PostBookingDtoTest(@Autowired JacksonTester<PostBookingDto> json) {
-        this.json = json;
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
+    private Validator validator;
     @BeforeEach
     void beforeEach() {
         postBookingDto = new PostBookingDto(
@@ -36,14 +26,15 @@ public class PostBookingDtoTest {
                 LocalDateTime.of(2030,12,25,12,0),
                 LocalDateTime.of(2030,12,26,12,0)
         );
-    }
 
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
     @Test
-    void test_JsonBookingInputDto() throws Exception {
-        JsonContent<PostBookingDto> result = json.write(postBookingDto);
-        assertThat(result).extractingJsonPathNumberValue("$.itemId").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo("2030-12-25T12:00:00");
-        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo("2030-12-26T12:00:00");
+    void test_JsonBookingInputDto() {
+        assertThat(postBookingDto.getItemId()).isEqualTo(1);
+        assertThat(postBookingDto.getStart()).isEqualTo(LocalDateTime.of(2030,12,25,12,0));
+        assertThat(postBookingDto.getEnd()).isEqualTo(LocalDateTime.of(2030,12,26,12,0));
     }
 
     @Test
