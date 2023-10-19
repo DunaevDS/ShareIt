@@ -55,7 +55,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(ItemDto itemDto, Integer ownerId) {
         if (itemDto == null) {
-            log.error("EmptyObjectException: Item is null.");
+            log.error("ItemNotFoundException: Item is null.");
             throw new ItemNotFoundException("Item was not provided");
         }
         User owner = UserMapper.mapToUser(userService.findUserById(ownerId));
@@ -89,7 +89,6 @@ public class ItemServiceImpl implements ItemService {
                             BookingShortDto nextBooking = bookingService.getNextBooking(itemId);
                             return ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
                         })
-                        //.sorted(Comparator.comparing(ItemDto::getId))
                         .collect(toList()));
                 pageable = pageable.next();
             } while (page.hasNext());
@@ -107,7 +106,6 @@ public class ItemServiceImpl implements ItemService {
                             BookingShortDto nextBooking = bookingService.getNextBooking(itemId);
                             return ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
                         })
-                        //.sorted(Comparator.comparing(ItemDto::getId))
                         .collect(toList()));
                 if (!page.hasNext()) {
                     break;

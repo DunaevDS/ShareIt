@@ -86,7 +86,7 @@ public class UserServiceImplTest {
     @Test
     void create_ThrowsValidationException_WhenInvalidName() {
         userDto.setName(" ");
-        assertThrows(ValidationException.class, () -> userService.update(userDto,userDto.getId()));
+        assertThrows(ValidationException.class, () -> userService.update(userDto, userDto.getId()));
     }
 
 }

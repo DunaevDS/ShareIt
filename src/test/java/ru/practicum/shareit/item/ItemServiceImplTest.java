@@ -61,6 +61,18 @@ public class ItemServiceImplTest {
     }
 
     @Test
+    void create_ThrowsItemNotFoundException_WhenItemDtoIsNull() {
+        ItemService itemService = new ItemServiceImpl(
+                mockItemRepository,
+                mockUserService,
+                mockCommentRepository,
+                mockBookingService
+        );
+
+        assertThrows(ItemNotFoundException.class, () -> itemService.create(null, 1));
+    }
+
+    @Test
     void create_ThrowsItemNotFoundException_WhenItemNotFound() {
         Integer bookerId = 1;
         Integer itemId = 1;

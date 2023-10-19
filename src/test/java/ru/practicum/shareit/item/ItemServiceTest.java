@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.PostBookingDto;
 import ru.practicum.shareit.exception.ItemNotFoundException;
+import ru.practicum.shareit.exception.PaginationException;
 import ru.practicum.shareit.exception.UserCommentException;
 import ru.practicum.shareit.item.coment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -110,6 +111,15 @@ public class ItemServiceTest {
         itemService.create(itemDto2, ownerDto.getId());
         List<ItemDto> listItems = itemService.getItemsByOwner(ownerDto.getId(), 0, 10);
         assertEquals(2, listItems.size());
+    }
+
+    @Test
+    void test_ReturnItemsByOwner_SizeNull() {
+        UserDto ownerDto = userService.create(userDto1);
+        itemService.create(itemDto, ownerDto.getId());
+        itemService.create(itemDto2, ownerDto.getId());
+        assertThrows(PaginationException.class,
+                () -> itemService.getItemsByOwner(ownerDto.getId(), 0, -1));
     }
 
     @Test

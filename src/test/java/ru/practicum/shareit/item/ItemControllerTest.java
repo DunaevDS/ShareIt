@@ -104,6 +104,25 @@ public class ItemControllerTest {
     }
 
     @Test
+    void getItemsByOwner_SizeIsNull() throws Exception {
+        when(itemService.getItemsByOwner(any(Integer.class), any(Integer.class), nullable(Integer.class)))
+                .thenReturn(List.of(itemDto));
+
+        mvc.perform(get("/items")
+                        .content(mapper.writeValueAsString(listItemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(USER_ID_HEADER, 1))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.[0].id", is(itemDto.getId()), Integer.class))
+                .andExpect(jsonPath("$.[0].name", is(itemDto.getName())))
+                .andExpect(jsonPath("$.[0].description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.[0].available", is(itemDto.getAvailable())));
+    }
+
+    @Test
     void deleteItem() throws Exception {
         mvc.perform(delete("/items/1")
                         .header(USER_ID_HEADER, 1))
