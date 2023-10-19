@@ -182,7 +182,7 @@ public class ItemServiceImpl implements ItemService {
             itemRepository.deleteById(itemId);
         } catch (EmptyResultDataAccessException e) {
             log.error("NotFoundException: Item with id='{}' was not found.", itemId);
-            throw new ItemNotFoundException("Item was not found");
+            throw e;
         }
     }
 

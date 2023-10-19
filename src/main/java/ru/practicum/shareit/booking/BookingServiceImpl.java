@@ -380,7 +380,7 @@ public class BookingServiceImpl implements BookingService {
 
     private ItemNotFoundException throwItemNotFoundException(String message) {
         log.error(message);
-        throw new BookingNotFoundException(message);
+        throw new ItemNotFoundException(message);
     }
 
     private List<CommentDto> getCommentsByItemId(Integer itemId) {

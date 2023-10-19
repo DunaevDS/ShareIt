@@ -13,12 +13,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.shareit.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,7 +43,7 @@ public class UserServiceImplTest {
         when(mockUserRepository.findById(any(Integer.class)))
                 .thenReturn(Optional.empty());
 
-        final UserNotFoundException exception = Assertions.assertThrows(
+        final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
 
                 () -> userService.findUserById(-1));
@@ -53,7 +55,7 @@ public class UserServiceImplTest {
         when(mockUserRepository.save(any()))
                 .thenThrow(new DataIntegrityViolationException(""));
 
-        final UserAlreadyExistsException exception = Assertions.assertThrows(
+        final UserAlreadyExistsException exception = assertThrows(
                 UserAlreadyExistsException.class,
                 () -> userService.create(userDto));
 
@@ -73,6 +75,18 @@ public class UserServiceImplTest {
 
         assertThat(user.getName(), equalTo(userDto.getName()));
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+    }
+
+    @Test
+    void create_ThrowsValidationException_WhenInvalidEmail() {
+        userDto.setEmail("invalidEmail@@");
+        assertThrows(ValidationException.class, () -> userService.create(userDto));
+    }
+
+    @Test
+    void create_ThrowsValidationException_WhenInvalidName() {
+        userDto.setName(" ");
+        assertThrows(ValidationException.class, () -> userService.update(userDto,userDto.getId()));
     }
 
 }
