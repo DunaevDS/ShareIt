@@ -58,25 +58,6 @@ public class BookingServiceImplTest {
         assertThrows(NotFoundException.class, () -> bookingService.getBookingById(bookingId, userId));
     }
 
-        /*@Test
-        void update_ThrowsConflictException_WhenBookingIsCancelled() {
-            Integer bookingId = 1;
-            Integer userId = 1;
-            Integer ownerId = 2;
-            Boolean approved = true;
-            User user = new User(userId, "Apollon", "apollo@yandex.ru");
-            User owner = new User(ownerId, "owner", "owner@yandex.ru");
-            Item item = new Item(1, "Item", "Description", true, owner, null);
-            Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), item, user,
-                    Status.CANCELED);
-            when(mockUserService.findUserById(userId)).thenReturn(UserMapper.mapToUserDto(user));
-            when(mockBookingRepository.findByIdAndItem_Owner_Id(bookingId, userId)).thenReturn(Optional.of(booking));
-
-            assertThrows(ConflictException.class, () -> bookingService.update(bookingId, userId, approved));
-
-            verify(mockBookingRepository, never()).save(any(Booking.class));
-        }*/
-
     @Test
     void test_BadRequestException() {
         Integer bookingId = 1;
@@ -92,48 +73,4 @@ public class BookingServiceImplTest {
         when(mockBookingRepository.findByIdAndItem_Owner_Id(any(), any())).thenReturn(Optional.of(booking));
         assertThrows(BadRequestException.class, () -> bookingService.update(bookingId, userId, approved));
     }
-
-        /*@Test
-        void update_ThrowsBadRequestException_WhenBookingIsRejectedByNonOwner() {
-            Integer bookingId = 1;
-            Integer userId = 1;
-            Integer ownerId = 2;
-            Boolean approved = true;
-            User user = new User(userId, "Apollon", "apollo@yandex.ru");
-            User owner = new User(ownerId, "owner", "owner@yandex.ru");
-            Item item = new Item(1, "Item", "Description", true, owner, null);
-            Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), item, user,
-                    Status.WAITING);
-            when(mockUserService.findUserById(userId)).thenReturn(UserMapper.mapToUserDto(user));
-            when(mockBookingRepository.findByIdAndItem_Owner_Id(bookingId, userId)).thenReturn(Optional.of(booking));
-
-            assertThrows(BadRequestException.class, () -> bookingService.update(bookingId, userId, approved));
-
-            verify(mockBookingRepository, never()).save(any(Booking.class));
-        }*/
-
-        /*@Test
-        void update_ThrowsBadRequestException_WhenBookingStatusIsNotWaiting() {
-            Integer bookingId = 1;
-            Integer userId = 1;
-            Integer ownerId = 2;
-            Integer itemId = 1;
-            Boolean approved = true;
-            User user = new User(userId, "user", "apollo@yandex.ru");
-            User owner = new User(ownerId, "owner", "owner@yandex.ru");
-            Item item = new Item(itemId, "Item", "Description", true, owner, null);
-            Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), item, user,
-                    Status.APPROVED);
-
-            when(mockItemRepository.findByOwnerId(userId, Pageable.unpaged())).thenReturn(
-                    Collections.singletonList(ItemMapper.mapToItemDto(item, Collections.emptyList()))
-            );
-
-            when(mockUserService.findUserById(userId)).thenReturn(UserMapper.mapToUserDto(user));
-            when(mockBookingRepository.findByIdAndItem_Owner_Id(bookingId, userId)).thenReturn(Optional.of(booking));
-
-            assertThrows(BadRequestException.class, () -> bookingService.update(bookingId, userId, approved));
-
-            verify(mockBookingRepository, never()).save(any(Booking.class));
-        }*/
 }
