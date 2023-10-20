@@ -158,31 +158,20 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookingList(String state, Integer userId, Integer from, Integer size) {
         userService.findUserById(userId);
+
         List<BookingDto> listBookingDto = new ArrayList<>();
-        Pageable pageable;
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        Page<Booking> page;
         Pagination pager = new Pagination(from, size);
+        Pageable pageable = PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
 
-            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
-                pageable =
-                        PageRequest.of(i, pager.getPageSize(), sort);
-
-                page = getPageBookings(state, userId, pageable);
-
-                listBookingDto.addAll(page.stream()
-                        .map(booking -> {
-                            Integer itemId = booking.getItem().getId();
-                            List<CommentDto> comments = getCommentsByItemId(itemId);
-                            return BookingMapper.toBookingDto(booking, comments);
-                        })
-                        .collect(Collectors.toList()));
-
-                if (!page.hasNext()) {
-                    break;
-                }
-            }
-            listBookingDto = listBookingDto.stream().limit(size).collect(toList());
+        Page<Booking> page = getPageBookings(state, userId, pageable);
+        listBookingDto.addAll(page.stream()
+                .map(booking -> {
+                    Integer itemId = booking.getItem().getId();
+                    List<CommentDto> comments = getCommentsByItemId(itemId);
+                    return BookingMapper.toBookingDto(booking, comments);
+                })
+                .collect(Collectors.toList()));
 
         return listBookingDto;
     }
@@ -221,30 +210,18 @@ public class BookingServiceImpl implements BookingService {
         userService.findUserById(userId);
 
         List<BookingDto> listBookingDto = new ArrayList<>();
-        Pageable pageable;
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        Page<Booking> page;
         Pagination pager = new Pagination(from, size);
+        Pageable pageable = PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
 
-            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
-                pageable =
-                        PageRequest.of(i, pager.getPageSize(), sort);
-
-                page = getPageBookingsOwner(state, userId, pageable);
-
-                listBookingDto.addAll(page.stream()
-                        .map(booking -> {
-                            Integer itemId = booking.getItem().getId();
-                            List<CommentDto> comments = getCommentsByItemId(itemId);
-                            return BookingMapper.toBookingDto(booking, comments);
-                        })
-                        .collect(Collectors.toList()));
-
-                if (!page.hasNext()) {
-                    break;
-                }
-            }
-            listBookingDto = listBookingDto.stream().limit(size).collect(toList());
+        Page<Booking> page = getPageBookingsOwner(state, userId, pageable);
+        listBookingDto.addAll(page.stream()
+                .map(booking -> {
+                    Integer itemId = booking.getItem().getId();
+                    List<CommentDto> comments = getCommentsByItemId(itemId);
+                    return BookingMapper.toBookingDto(booking, comments);
+                })
+                .collect(Collectors.toList()));
 
         return listBookingDto;
     }

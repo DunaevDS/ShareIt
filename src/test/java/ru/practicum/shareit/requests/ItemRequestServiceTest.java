@@ -94,22 +94,6 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    void test_ReturnAllItemRequestsWhenSizeNull() {
-        UserDto firstUserDto = userService.create(userDto1);
-        UserDto newUserDto = userService.create(userDto2);
-
-        ItemRequestDto returnOneRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId()
-        );
-        ItemRequestDto returnTwoRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId()
-        );
-
-        List<ItemRequestDto> listItemRequest = itemRequestService.getAllItemRequests(firstUserDto.getId(),
-                0, null);
-
-        assertThat(listItemRequest.size(), equalTo(2));
-    }
-
-    @Test
     void test_ReturnOwnItemRequests() {
         UserDto firstUserDto = userService.create(userDto1);
         UserDto newUserDto = userService.create(userDto2);

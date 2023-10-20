@@ -70,29 +70,22 @@ public class ItemServiceImpl implements ItemService {
         userService.findUserById(ownerId);
 
         List<ItemDto> listItemExtDto = new ArrayList<>();
-        Pageable pageable;
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Page<Item> page;
         Pagination pager = new Pagination(from, size);
+        Pageable pageable = PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
 
-            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
-                pageable =
-                        PageRequest.of(i, pager.getPageSize(), sort);
-                page = itemRepository.findByOwnerId(ownerId, pageable);
-                listItemExtDto.addAll(page.stream()
-                        .map(item -> {
-                            Integer itemId = item.getId();
-                            List<CommentDto> comments = getCommentsByItemId(itemId);
-                            BookingShortDto lastBooking = bookingService.getLastBooking(itemId);
-                            BookingShortDto nextBooking = bookingService.getNextBooking(itemId);
-                            return ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
-                        })
-                        .collect(toList()));
-                if (!page.hasNext()) {
-                    break;
-                }
-            }
-            listItemExtDto = listItemExtDto.stream().limit(size).collect(toList());
+        Page<Item> page = itemRepository.findByOwnerId(ownerId, pageable);
+        listItemExtDto.addAll(page.stream()
+                .map(item -> {
+                    Integer itemId = item.getId();
+                    List<CommentDto> comments = getCommentsByItemId(itemId);
+                    BookingShortDto lastBooking = bookingService.getLastBooking(itemId);
+                    BookingShortDto nextBooking = bookingService.getNextBooking(itemId);
+                    return ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
+                })
+                .collect(toList()));
+
+        listItemExtDto = listItemExtDto.stream().limit(size).collect(toList());
 
         return listItemExtDto;
     }
@@ -170,25 +163,19 @@ public class ItemServiceImpl implements ItemService {
         List<ItemDto> listItemDto = new ArrayList<>();
         if ((text != null) && (!text.isEmpty()) && (!text.isBlank())) {
             text = text.toLowerCase();
-            Pageable pageable;
-            Page<Item> page;
-            Pagination pager = new Pagination(from, size);
 
-            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
-                pageable =
-                        PageRequest.of(i, pager.getPageSize());
-                page = itemRepository.getItemsBySearchQuery(text, pageable);
-                listItemDto.addAll(page.stream()
-                        .map(item -> {
-                            Integer itemId = item.getId();
-                            List<CommentDto> comments = getCommentsByItemId(itemId);
-                            return ItemMapper.mapToItemDto(item, comments);
-                        })
-                        .collect(toList()));
-                if (!page.hasNext()) {
-                    break;
-                }
-            }
+            Pagination pager = new Pagination(from, size);
+            Pageable pageable = PageRequest.of(pager.getIndex(), pager.getPageSize());
+
+            Page<Item> page = itemRepository.getItemsBySearchQuery(text, pageable);
+            listItemDto.addAll(page.stream()
+                    .map(item -> {
+                        Integer itemId = item.getId();
+                        List<CommentDto> comments = getCommentsByItemId(itemId);
+                        return ItemMapper.mapToItemDto(item, comments);
+                    })
+                    .collect(toList()));
+
             listItemDto = listItemDto.stream().limit(size).collect(toList());
         }
 

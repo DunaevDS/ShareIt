@@ -93,26 +93,19 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userService.findUserById(userId);
 
         List<ItemRequestDto> listItemRequestDto = new ArrayList<>();
-        Pageable pageable;
-        Page<ItemRequest> page;
-        Pagination pager = new Pagination(from, size);
         Sort sort = Sort.by(Sort.Direction.DESC, "created");
+        Pagination pager = new Pagination(from, size);
+        Pageable pageable = PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
 
-        for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
-            pageable =
-                    PageRequest.of(i, pager.getPageSize(), sort);
-            page = repository.findAllByrequesterIdNot(userId, pageable);
-            listItemRequestDto.addAll(page.stream()
-                    .map(itemRequest -> {
-                        Integer id = itemRequest.getId();
-                        List<ItemDto> itemsListByRequest = getItemsByRequestId(id);
-                        return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
-                    })
-                    .collect(toList()));
-            if (!page.hasNext()) {
-                break;
-            }
-        }
+        Page<ItemRequest> page = repository.findAllByrequesterIdNot(userId, pageable);
+        listItemRequestDto.addAll(page.stream()
+                .map(itemRequest -> {
+                    Integer id = itemRequest.getId();
+                    List<ItemDto> itemsListByRequest = getItemsByRequestId(id);
+                    return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
+                })
+                .collect(toList()));
+
         listItemRequestDto = listItemRequestDto.stream()
                 .limit(size)
                 .collect(toList());

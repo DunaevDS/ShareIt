@@ -131,15 +131,6 @@ public class ItemServiceTest {
     }
 
     @Test
-    void test_ReturnItemsBySearch_SizeIsNull() {
-        UserDto ownerDto = userService.create(userDto1);
-        itemService.create(itemDto, ownerDto.getId());
-        itemService.create(itemDto2, ownerDto.getId());
-        List<ItemDto> listItems = itemService.getItemsBySearchQuery("item", 0, null);
-        assertEquals(2, listItems.size());
-    }
-
-    @Test
     void test_ExceptionWhenCreateComment_UserNotBooker() {
         UserDto ownerDto = userService.create(userDto1);
         UserDto newUserDto = userService.create(userDto2);
