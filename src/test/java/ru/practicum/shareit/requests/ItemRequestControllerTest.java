@@ -49,7 +49,7 @@ public class ItemRequestControllerTest {
 
     @Test
     void createItemRequest() throws Exception {
-        when(itemRequestService.create(any(), any(Integer.class), any(LocalDateTime.class)))
+        when(itemRequestService.create(any(), any(Integer.class)))
                 .thenReturn(itemRequestDto);
         mvc.perform(post("/requests")
                         .content(mapper.writeValueAsString(itemRequestDto))

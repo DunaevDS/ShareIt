@@ -164,25 +164,6 @@ public class BookingServiceImpl implements BookingService {
         Page<Booking> page;
         Pagination pager = new Pagination(from, size);
 
-        if (size == null) {
-            pageable =
-                    PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
-            do {
-                page = getPageBookings(state, userId, pageable);
-
-                listBookingDto.addAll(page.stream()
-                        .map(booking -> {
-                            Integer itemId = booking.getItem().getId();
-                            List<CommentDto> comments = getCommentsByItemId(itemId);
-                            return BookingMapper.toBookingDto(booking, comments);
-                        })
-                        .collect(Collectors.toList()));
-
-                pageable = pageable.next();
-
-            } while (page.hasNext());
-
-        } else {
             for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
                 pageable =
                         PageRequest.of(i, pager.getPageSize(), sort);
@@ -202,7 +183,7 @@ public class BookingServiceImpl implements BookingService {
                 }
             }
             listBookingDto = listBookingDto.stream().limit(size).collect(toList());
-        }
+
         return listBookingDto;
     }
 
@@ -245,25 +226,6 @@ public class BookingServiceImpl implements BookingService {
         Page<Booking> page;
         Pagination pager = new Pagination(from, size);
 
-        if (size == null) {
-            pageable =
-                    PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
-            do {
-                page = getPageBookingsOwner(state, userId, pageable);
-
-                listBookingDto.addAll(page.stream()
-                        .map(booking -> {
-                            Integer itemId = booking.getItem().getId();
-                            List<CommentDto> comments = getCommentsByItemId(itemId);
-                            return BookingMapper.toBookingDto(booking, comments);
-                        })
-                        .collect(Collectors.toList()));
-
-                pageable = pageable.next();
-
-            } while (page.hasNext());
-
-        } else {
             for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
                 pageable =
                         PageRequest.of(i, pager.getPageSize(), sort);
@@ -283,7 +245,7 @@ public class BookingServiceImpl implements BookingService {
                 }
             }
             listBookingDto = listBookingDto.stream().limit(size).collect(toList());
-        }
+
         return listBookingDto;
     }
 

@@ -8,7 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.coment.CommentMapper;
+import ru.practicum.shareit.item.coment.CommentRepository;
+import ru.practicum.shareit.item.coment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -29,28 +33,32 @@ import static java.util.stream.Collectors.toList;
 @Transactional
 public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository repository;
+    private final ItemRepository itemRepository;
+    private final CommentRepository commentRepository;
     private final UserService userService;
-    private final ItemService itemService;
 
     @Autowired
-    public ItemRequestServiceImpl(ItemRequestRepository repository, UserService userService, ItemService itemService) {
+    public ItemRequestServiceImpl(ItemRequestRepository repository,
+                                  UserService userService,
+                                  ItemRepository itemRepository,
+                                  CommentRepository commentRepository) {
         this.repository = repository;
+
+        this.itemRepository = itemRepository;
         this.userService = userService;
-        this.itemService = itemService;
+        this.commentRepository = commentRepository;
     }
 
     @Override
-    public ItemRequestDto create(ItemRequestDto itemRequestDto, Integer requesterId, LocalDateTime created) {
+    public ItemRequestDto create(ItemRequestDto itemRequestDto, Integer requesterId) {
         UserDto user = userService.findUserById(requesterId);
 
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto,
                 UserMapper.mapToUser(user),
-                created
+                LocalDateTime.now()
         );
 
-        List<ItemDto> itemsListByRequest = itemService.getItemsByRequestId(itemRequest.getId());
-
-        return ItemRequestMapper.toItemRequestDto(repository.save(itemRequest), itemsListByRequest);
+        return ItemRequestMapper.toItemRequestDto(repository.save(itemRequest), null);
     }
 
     @Override
@@ -61,7 +69,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(() -> throwNotFoundException(
                         "NotFoundException: request with id=" + itemRequestId + " was not found."));
 
-        List<ItemDto> itemsListByRequest = itemService.getItemsByRequestId(itemRequestId);
+        List<ItemDto> itemsListByRequest = getItemsByRequestId(itemRequestId);
 
         return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
     }
@@ -74,7 +82,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                         Sort.by(Sort.Direction.DESC, "created")).stream()
                 .map(itemRequest -> {
                     Integer id = itemRequest.getId();
-                    List<ItemDto> itemsListByRequest = itemService.getItemsByRequestId(id);
+                    List<ItemDto> itemsListByRequest = getItemsByRequestId(id);
                     return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
                 })
                 .collect(toList());
@@ -90,42 +98,45 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Pagination pager = new Pagination(from, size);
         Sort sort = Sort.by(Sort.Direction.DESC, "created");
 
-        if (size == null) {
-            List<ItemRequest> listItemRequest = repository.findAllByrequesterIdNotOrderByCreatedDesc(userId);
-            listItemRequestDto
-                    .addAll(listItemRequest.stream()
-                            .skip(from)
-                            .map(itemRequest -> {
-                                Integer id = itemRequest.getId();
-                                List<ItemDto> itemsListByRequest = itemService.getItemsByRequestId(id);
-                                return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
-                            })
-                            .collect(toList()));
-        } else {
-            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
-                pageable =
-                        PageRequest.of(i, pager.getPageSize(), sort);
-                page = repository.findAllByrequesterIdNot(userId, pageable);
-                listItemRequestDto.addAll(page.stream()
-                        .map(itemRequest -> {
-                            Integer id = itemRequest.getId();
-                            List<ItemDto> itemsListByRequest = itemService.getItemsByRequestId(id);
-                            return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
-                        })
-                        .collect(toList()));
-                if (!page.hasNext()) {
-                    break;
-                }
+        for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
+            pageable =
+                    PageRequest.of(i, pager.getPageSize(), sort);
+            page = repository.findAllByrequesterIdNot(userId, pageable);
+            listItemRequestDto.addAll(page.stream()
+                    .map(itemRequest -> {
+                        Integer id = itemRequest.getId();
+                        List<ItemDto> itemsListByRequest = getItemsByRequestId(id);
+                        return ItemRequestMapper.toItemRequestDto(itemRequest, itemsListByRequest);
+                    })
+                    .collect(toList()));
+            if (!page.hasNext()) {
+                break;
             }
-            listItemRequestDto = listItemRequestDto.stream()
-                    .limit(size)
-                    .collect(toList());
         }
+        listItemRequestDto = listItemRequestDto.stream()
+                .limit(size)
+                .collect(toList());
+
         return listItemRequestDto;
     }
 
     private NotFoundException throwNotFoundException(String message) {
         log.error(message);
         throw new NotFoundException(message);
+    }
+
+    private List<ItemDto> getItemsByRequestId(Integer requestId) {
+        return itemRepository.findAllByRequestId(requestId,
+                        Sort.by(Sort.Direction.DESC, "id")).stream()
+                .map(item -> {
+                    Integer itemId = item.getId();
+                    List<CommentDto> comments = commentRepository.findAllByItem_Id(itemId,
+                                    Sort.by(Sort.Direction.DESC, "created")).stream()
+                            .map(CommentMapper::mapToCommentDto)
+                            .collect(toList());
+
+                    return ItemMapper.mapToItemDto(item, comments);
+                })
+                .collect(toList());
     }
 }

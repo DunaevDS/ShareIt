@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 
@@ -28,7 +29,7 @@ public class ItemRequestController {
                                  @RequestHeader(USER_ID_HEADER) Integer requesterId) {
         log.info("Получен POST-запрос к эндпоинту: '/requests' " +
                 "на создание запроса вещи от пользователя с ID={}", requesterId);
-        return service.create(itemRequestDto, requesterId, LocalDateTime.now());
+        return service.create(itemRequestDto, requesterId);
     }
 
     @GetMapping("/{requestId}")
@@ -46,8 +47,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAllItemRequests(@RequestHeader(USER_ID_HEADER) Integer userId,
-                                                   @RequestParam(defaultValue = "0") Integer from,
-                                                   @RequestParam(required = false) Integer size) {
+                                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                   @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен GET-запрос к эндпоинту: '/requests/all' от пользователя с ID={} на получение всех запросов",
                 userId);
         return service.getAllItemRequests(userId, from, size);

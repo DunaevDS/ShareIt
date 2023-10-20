@@ -75,25 +75,6 @@ public class ItemServiceImpl implements ItemService {
         Page<Item> page;
         Pagination pager = new Pagination(from, size);
 
-
-        if (size == null) {
-            pageable =
-                    PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
-            do {
-                page = itemRepository.findByOwnerId(ownerId, pageable);
-                listItemExtDto.addAll(page.stream()
-                        .map(item -> {
-                            Integer itemId = item.getId();
-                            List<CommentDto> comments = getCommentsByItemId(itemId);
-                            BookingShortDto lastBooking = bookingService.getLastBooking(itemId);
-                            BookingShortDto nextBooking = bookingService.getNextBooking(itemId);
-                            return ItemMapper.toItemWithBookingDto(item, lastBooking, nextBooking, comments);
-                        })
-                        .collect(toList()));
-                pageable = pageable.next();
-            } while (page.hasNext());
-
-        } else {
             for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
                 pageable =
                         PageRequest.of(i, pager.getPageSize(), sort);
@@ -112,7 +93,7 @@ public class ItemServiceImpl implements ItemService {
                 }
             }
             listItemExtDto = listItemExtDto.stream().limit(size).collect(toList());
-        }
+
         return listItemExtDto;
     }
 
@@ -190,44 +171,27 @@ public class ItemServiceImpl implements ItemService {
         if ((text != null) && (!text.isEmpty()) && (!text.isBlank())) {
             text = text.toLowerCase();
             Pageable pageable;
-            Sort sort = Sort.by(Sort.Direction.ASC, "name");
             Page<Item> page;
             Pagination pager = new Pagination(from, size);
 
-            if (size == null) {
+            for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
                 pageable =
-                        PageRequest.of(pager.getIndex(), pager.getPageSize(), sort);
-                do {
-                    page = itemRepository.getItemsBySearchQuery(text, pageable);
-                    listItemDto.addAll(page.stream()
-                            .map(item -> {
-                                Integer itemId = item.getId();
-                                List<CommentDto> comments = getCommentsByItemId(itemId);
-                                return ItemMapper.mapToItemDto(item, comments);
-                            })
-                            .collect(toList()));
-                    pageable = pageable.next();
-                } while (page.hasNext());
-
-            } else {
-                for (int i = pager.getIndex(); i < pager.getTotalPages(); i++) {
-                    pageable =
-                            PageRequest.of(i, pager.getPageSize(), sort);
-                    page = itemRepository.getItemsBySearchQuery(text, pageable);
-                    listItemDto.addAll(page.stream()
-                            .map(item -> {
-                                Integer itemId = item.getId();
-                                List<CommentDto> comments = getCommentsByItemId(itemId);
-                                return ItemMapper.mapToItemDto(item, comments);
-                            })
-                            .collect(toList()));
-                    if (!page.hasNext()) {
-                        break;
-                    }
+                        PageRequest.of(i, pager.getPageSize());
+                page = itemRepository.getItemsBySearchQuery(text, pageable);
+                listItemDto.addAll(page.stream()
+                        .map(item -> {
+                            Integer itemId = item.getId();
+                            List<CommentDto> comments = getCommentsByItemId(itemId);
+                            return ItemMapper.mapToItemDto(item, comments);
+                        })
+                        .collect(toList()));
+                if (!page.hasNext()) {
+                    break;
                 }
-                listItemDto = listItemDto.stream().limit(size).collect(toList());
             }
+            listItemDto = listItemDto.stream().limit(size).collect(toList());
         }
+
         return listItemDto;
     }
 
@@ -253,18 +217,6 @@ public class ItemServiceImpl implements ItemService {
         return commentRepository.findAllByItem_Id(itemId,
                         Sort.by(Sort.Direction.DESC, "created")).stream()
                 .map(CommentMapper::mapToCommentDto)
-                .collect(toList());
-    }
-
-    @Override
-    public List<ItemDto> getItemsByRequestId(Integer requestId) {
-        return itemRepository.findAllByRequestId(requestId,
-                        Sort.by(Sort.Direction.DESC, "id")).stream()
-                .map(item -> {
-                    Integer itemId = item.getId();
-                    List<CommentDto> comments = getCommentsByItemId(itemId);
-                    return ItemMapper.mapToItemDto(item, comments);
-                })
                 .collect(toList());
     }
 

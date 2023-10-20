@@ -9,8 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.exception.NotFoundException;
 
-import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.ItemRepository;
 
+import ru.practicum.shareit.item.coment.CommentRepository;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.ItemRequestServiceImpl;
@@ -33,14 +34,17 @@ public class ItemRequestServiceImplTest {
     @Mock
     private UserService mockUserService;
     @Mock
-    private ItemService mockItemService;
+    private ItemRepository mockItemRepository;
+    @Mock
+    private CommentRepository mockCommentRepository;
 
     private ItemRequestService itemRequestService;
     private final UserDto user = new UserDto(1, "Apollon", "bestJavaProgrammer@yandex.ru");
 
     @BeforeEach
     void beforeEach() {
-        itemRequestService = new ItemRequestServiceImpl(mockItemRequestRepository, mockUserService, mockItemService);
+        itemRequestService = new ItemRequestServiceImpl(mockItemRequestRepository,
+                mockUserService, mockItemRepository, mockCommentRepository);
     }
 
 

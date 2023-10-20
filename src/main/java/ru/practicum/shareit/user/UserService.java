@@ -14,5 +14,4 @@ public interface UserService {
     List<UserDto> getUsers();
 
     UserDto findUserById(Integer userId);
-
 }

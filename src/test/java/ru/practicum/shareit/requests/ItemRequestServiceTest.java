@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.coment.CommentRepository;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.ItemRequestServiceImpl;
@@ -32,6 +34,10 @@ public class ItemRequestServiceTest {
     ItemRequestRepository itemRequestRepository;
     @Autowired
     ItemService itemService;
+    @Autowired
+    ItemRepository itemRepository;
+    @Autowired
+    CommentRepository commentRepository;
     private final UserDto userDto1 = new UserDto(1, "User1", "user1@yandex.ru");
     private final UserDto userDto2 = new UserDto(2, "User2", "user2@yandex.ru");
 
@@ -40,14 +46,15 @@ public class ItemRequestServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        itemRequestService = new ItemRequestServiceImpl(itemRequestRepository, userService, itemService);
+        itemRequestService = new ItemRequestServiceImpl(itemRequestRepository,
+                userService, itemRepository, commentRepository);
     }
 
     @Test
     void test_CreateItemRequest() {
         UserDto newUserDto = userService.create(userDto1);
-        ItemRequestDto returnRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId(),
-                LocalDateTime.of(2022, 1, 2, 3, 4, 5));
+        ItemRequestDto returnRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId()
+        );
         assertThat(returnRequestDto.getDescription(), equalTo(itemRequestDto.getDescription()));
     }
 
@@ -55,8 +62,8 @@ public class ItemRequestServiceTest {
     void test_ExceptionWhenCreateItemRequestWithWrongUserId() {
         int requesterId = -2;
         NotFoundException exp = assertThrows(NotFoundException.class,
-                () -> itemRequestService.create(itemRequestDto, requesterId,
-                        LocalDateTime.of(2024, 1, 2, 3, 4, 5)));
+                () -> itemRequestService.create(itemRequestDto, requesterId
+                ));
         assertEquals("NotFoundException: User with id= " + requesterId + " was not found.", exp.getMessage());
     }
 
@@ -75,10 +82,10 @@ public class ItemRequestServiceTest {
         UserDto firstUserDto = userService.create(userDto1);
         UserDto newUserDto = userService.create(userDto2);
 
-        ItemRequestDto returnOneRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId(),
-                LocalDateTime.of(2024, 1, 2, 3, 4, 5));
-        ItemRequestDto returnTwoRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId(),
-                LocalDateTime.of(2025, 1, 2, 3, 4, 5));
+        ItemRequestDto returnOneRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId()
+        );
+        ItemRequestDto returnTwoRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId()
+        );
 
         List<ItemRequestDto> listItemRequest = itemRequestService.getAllItemRequests(firstUserDto.getId(),
                 0, 10);
@@ -91,10 +98,10 @@ public class ItemRequestServiceTest {
         UserDto firstUserDto = userService.create(userDto1);
         UserDto newUserDto = userService.create(userDto2);
 
-        ItemRequestDto returnOneRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId(),
-                LocalDateTime.of(2024, 1, 2, 3, 4, 5));
-        ItemRequestDto returnTwoRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId(),
-                LocalDateTime.of(2025, 1, 2, 3, 4, 5));
+        ItemRequestDto returnOneRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId()
+        );
+        ItemRequestDto returnTwoRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId()
+        );
 
         List<ItemRequestDto> listItemRequest = itemRequestService.getAllItemRequests(firstUserDto.getId(),
                 0, null);
@@ -107,10 +114,10 @@ public class ItemRequestServiceTest {
         UserDto firstUserDto = userService.create(userDto1);
         UserDto newUserDto = userService.create(userDto2);
 
-        ItemRequestDto returnOneRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId(),
-                LocalDateTime.of(2024, 1, 2, 3, 4, 5));
-        ItemRequestDto returnTwoRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId(),
-                LocalDateTime.of(2025, 1, 2, 3, 4, 5));
+        ItemRequestDto returnOneRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId()
+        );
+        ItemRequestDto returnTwoRequestDto = itemRequestService.create(itemRequestDto, newUserDto.getId()
+        );
 
         List<ItemRequestDto> listItemRequest = itemRequestService.getOwnItemRequests(newUserDto.getId());
 
@@ -121,8 +128,8 @@ public class ItemRequestServiceTest {
     void test_ReturnItemRequestById() {
         UserDto firstUserDto = userService.create(userDto1);
 
-        ItemRequestDto newItemRequestDto = itemRequestService.create(itemRequestDto, firstUserDto.getId(),
-                LocalDateTime.of(2023, 1, 2, 3, 4, 5));
+        ItemRequestDto newItemRequestDto = itemRequestService.create(itemRequestDto, firstUserDto.getId()
+        );
         ItemRequestDto returnItemRequestDto = itemRequestService.getItemRequestById(newItemRequestDto.getId(),
                 firstUserDto.getId());
 

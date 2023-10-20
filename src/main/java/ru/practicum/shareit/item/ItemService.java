@@ -21,6 +21,4 @@ public interface ItemService {
     CommentDto createComment(String commentDtoText, Integer itemId, Integer userId);
 
     List<CommentDto> getCommentsByItemId(Integer itemId);
-
-    List<ItemDto> getItemsByRequestId(Integer requestId);
 }
