@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: ru.practicum.shareit.item.ItemServiceTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.252 s - in ru.practicum.shareit.item.ItemServiceTest
