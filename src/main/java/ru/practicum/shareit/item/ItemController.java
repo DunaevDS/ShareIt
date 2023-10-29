@@ -8,6 +8,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -52,6 +54,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getItemsByOwner(@RequestHeader(owner) Integer ownerId,
+                                         @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                         @Positive @RequestParam(defaultValue = "10") Integer size,
                                          HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(),
@@ -59,7 +63,7 @@ public class ItemController {
                 request.getQueryString()
         );
 
-        return itemService.getItemsByOwner(ownerId);
+        return itemService.getItemsByOwner(ownerId, from, size);
     }
 
     @ResponseBody
@@ -92,6 +96,8 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> getItemsBySearchQuery(@RequestParam String text,
+                                               @PositiveOrZero@RequestParam(defaultValue = "0") Integer from,
+                                               @Positive @RequestParam(defaultValue = "10") Integer size,
                                                HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}'",
                 request.getMethod(),
@@ -99,7 +105,7 @@ public class ItemController {
                 request.getQueryString()
         );
 
-        return itemService.getItemsBySearchQuery(text);
+        return itemService.getItemsBySearchQuery(text, from, size);
     }
 
     @ResponseBody

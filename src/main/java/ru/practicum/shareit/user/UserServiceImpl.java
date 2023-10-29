@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.BookingNotFoundException;
-import ru.practicum.shareit.exception.UserAlreadyExistsException;
-import ru.practicum.shareit.exception.UserNotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.exception.ConflictException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -31,14 +29,14 @@ public class UserServiceImpl implements UserService {
     public UserDto create(UserDto userDto) {
         if (userDto == null) {
             log.error("EmptyObjectException: User is null.");
-            throw new UserNotFoundException("User was not provided");
+            throw new NotFoundException("User was not provided");
         }
         validationUserCreation(userDto);
         try {
             return UserMapper.mapToUserDto(userRepository.save(UserMapper.mapToUser(userDto)));
         } catch (DataIntegrityViolationException e) {
             log.error("User with email='{}' already exists", userDto.getEmail());
-            throw new UserAlreadyExistsException("User with email = " + userDto.getEmail() + " already exists");
+            throw new ConflictException("User with email = " + userDto.getEmail() + " already exists");
         }
     }
 
@@ -46,13 +44,13 @@ public class UserServiceImpl implements UserService {
     public UserDto update(UserDto userDto, Integer id) {
         if (userDto == null) {
             log.error("EmptyObjectException: User is null.");
-            throw new UserNotFoundException("User was not provided");
+            throw new NotFoundException("User was not provided");
         }
 
         validationUserUpdate(userDto);
         userDto.setId(id);
 
-        User user = userRepository.findById(id).orElseThrow(() -> throwUserNotFoundException(
+        User user = userRepository.findById(id).orElseThrow(() -> throwNotFoundException(
                 "NotFoundException: Item with id= " + id + " was not found."));
 
         if (userDto.getName() != null) {
@@ -67,7 +65,7 @@ public class UserServiceImpl implements UserService {
                 user.setEmail(userDto.getEmail());
             } else {
                 log.error("User with email='{}' already exists", userDto.getEmail());
-                throw new UserAlreadyExistsException("User with email = " + userDto.getEmail() + " already exists");
+                throw new ConflictException("User with email = " + userDto.getEmail() + " already exists");
             }
         }
         return UserMapper.mapToUserDto(userRepository.save(user));
@@ -77,18 +75,10 @@ public class UserServiceImpl implements UserService {
     public void delete(Integer userId) {
         if (!userRepository.existsById(userId)) {
             log.error("NotFoundException: User with id='{}' was not found.", userId);
-            throw new UserNotFoundException("User was not found");
+            throw new NotFoundException("User was not found");
         }
 
         userRepository.deleteById(userId);
-    }
-
-    @Override
-    public UserDto getUserById(Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> throwUserNotFoundException(
-                "NotFoundException: Item with id= " + userId + " was not found."));
-
-        return UserMapper.mapToUserDto(user);
     }
 
     @Override
@@ -100,32 +90,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findUserById(Integer userId) {
-        return UserMapper.mapToUserDto(userRepository.findById(userId).orElseThrow(() -> throwUserNotFoundException(
-                "NotFoundException: Item with id= " + userId + " was not found.")));
+        return UserMapper.mapToUserDto(userRepository.findById(userId).orElseThrow(() -> throwNotFoundException(
+                "NotFoundException: User with id= " + userId + " was not found.")));
     }
 
     private void validationUserCreation(UserDto userDto) {
         if (userDto.getEmail().isBlank() || !isValidEmail(userDto.getEmail())) {
-            log.error("ValidationException: incorrect email");
-            throw new ValidationException("Incorrect email " + userDto.getEmail());
+            log.error("ConflictException: incorrect email");
+            throw new ConflictException("Incorrect email " + userDto.getEmail());
         }
         if ((userDto.getName().isBlank()) || (userDto.getName().contains(" "))) {
-            log.error("ValidationException: incorrect login");
-            throw new ValidationException("Incorrect name " + userDto.getName());
+            log.error("ConflictException: incorrect login");
+            throw new ConflictException("Incorrect name " + userDto.getName());
         }
     }
 
     private void validationUserUpdate(UserDto userDto) {
         if (userDto.getEmail() != null) {
             if (!isValidEmail(userDto.getEmail())) {
-                log.error("ValidationException: incorrect email");
-                throw new ValidationException("Incorrect email " + userDto.getEmail());
+                log.error("ConflictException: incorrect email");
+                throw new ConflictException("Incorrect email " + userDto.getEmail());
             }
         }
         if (userDto.getName() != null) {
             if ((userDto.getName().contains(" "))) {
-                log.error("ValidationException: incorrect login");
-                throw new ValidationException("Incorrect name " + userDto.getName());
+                log.error("ConflictException: incorrect login");
+                throw new ConflictException("Incorrect name " + userDto.getName());
             }
         }
     }
@@ -135,8 +125,8 @@ public class UserServiceImpl implements UserService {
         return email.matches(emailRegex);
     }
 
-    private UserNotFoundException throwUserNotFoundException(String message) {
+    private NotFoundException throwNotFoundException(String message) {
         log.error(message);
-        throw new BookingNotFoundException(message);
+        throw new NotFoundException(message);
     }
 }

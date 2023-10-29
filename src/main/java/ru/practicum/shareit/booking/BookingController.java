@@ -8,6 +8,8 @@ import ru.practicum.shareit.booking.dto.PostBookingDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -69,6 +71,8 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getBookings(@RequestParam(name = "state", defaultValue = "ALL") String state,
                                         @RequestHeader(USER_ID_HEADER) Integer userId,
+                                        @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                        @Positive @RequestParam(defaultValue = "10") Integer size,
                                         HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', booker ID = '{}",
                 request.getMethod(),
@@ -77,12 +81,14 @@ public class BookingController {
                 request.getHeader(USER_ID_HEADER)
         );
 
-        return service.getBookingList(state, userId);
+        return service.getBookingList(state, userId, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getBookingsOwner(@RequestParam(name = "state", defaultValue = "ALL") String state,
                                              @RequestHeader(USER_ID_HEADER) Integer userId,
+                                             @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                             @Positive@RequestParam(defaultValue = "10") Integer size,
                                              HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', booker ID = '{}",
                 request.getMethod(),
@@ -91,6 +97,6 @@ public class BookingController {
                 request.getHeader(USER_ID_HEADER)
         );
 
-        return service.getBookingsOwner(state, userId);
+        return service.getBookingsOwner(state, userId, from, size);
     }
 }
