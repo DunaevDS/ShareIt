@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-
 @Slf4j
 @Service
 public class BookingServiceImpl implements BookingService {

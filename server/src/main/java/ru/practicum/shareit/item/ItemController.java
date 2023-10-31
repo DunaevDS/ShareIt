@@ -34,6 +34,9 @@ public class ItemController {
                 request.getQueryString()
         );
 
+        log.info("ownerId = " + ownerId);
+        log.info("itemId = " + itemId);
+
         return itemService.getItemById(itemId, ownerId);
     }
 
@@ -49,6 +52,9 @@ public class ItemController {
                 request.getHeader(owner)
         );
 
+        log.info("itemDto = " + itemDto);
+        log.info("ownerId = " + ownerId);
+
         return itemService.create(itemDto, ownerId);
     }
 
@@ -62,6 +68,10 @@ public class ItemController {
                 request.getRequestURI(),
                 request.getQueryString()
         );
+
+        System.out.println("ownerId = " + ownerId);
+        System.out.println("from = " + from);
+        System.out.println("size = " + size);
 
         return itemService.getItemsByOwner(ownerId, from, size);
     }

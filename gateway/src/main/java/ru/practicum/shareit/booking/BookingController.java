@@ -36,8 +36,7 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Object> getBookingsOwner(@RequestParam(name = "state", defaultValue = "all")
-                                                   String stateParam,
+    public ResponseEntity<Object> getBookingsOwner(@RequestParam(name = "state", defaultValue = "all") String stateParam,
                                                    @RequestHeader(USER_ID) Integer userId,
                                                    @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                    @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
@@ -59,15 +58,18 @@ public class BookingController {
     public ResponseEntity<Object> getBooking(@RequestHeader(USER_ID) Integer userId,
                                              @PathVariable Integer bookingId) {
         log.info("Get booking {}, userId={}", bookingId, userId);
+
         return bookingClient.getBooking(userId, bookingId);
     }
 
     @ResponseBody
     @PatchMapping("/{bookingId}")
     public ResponseEntity<Object> update(@PathVariable Integer bookingId,
-                                         @RequestHeader(USER_ID) Integer userId, @RequestParam Boolean approved) {
+                                         @RequestHeader(USER_ID) Integer userId,
+                                         @RequestParam Boolean approved) {
         log.info("Получен PATCH-запрос к эндпоинту: '/bookings' на обновление статуса бронирования с ID={}",
                 bookingId);
+
         return bookingClient.update(bookingId, userId, approved);
     }
 }

@@ -42,6 +42,9 @@ public class ItemController {
     public ResponseEntity<Object> getItemById(@RequestHeader(owner) Integer userId,
                                               @PathVariable Integer itemId) {
         log.info("Запрос вещи {}, userId={}", itemId, userId);
+
+        log.info("userId = " + userId);
+        log.info("itemId = " + itemId);
         return itemClient.getItemById(userId, itemId);
     }
 

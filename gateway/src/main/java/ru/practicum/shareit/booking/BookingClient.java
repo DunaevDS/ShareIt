@@ -47,15 +47,26 @@ public class BookingClient extends BaseClient {
 
 
     public ResponseEntity<Object> create(Integer userId, BookItemRequestDto requestDto) {
+        System.out.println("userId = " + userId);
+        System.out.println("requestDto = "+ requestDto);
         return post("", userId, requestDto);
     }
 
     public ResponseEntity<Object> getBooking(Integer userId, Integer bookingId) {
+
+        System.out.println("userId = " + userId);
+        System.out.println("bookingId = " + bookingId);
+
         return get("/" + bookingId, userId);
     }
 
     public ResponseEntity<Object> update(Integer bookingId, Integer userId, Boolean approved) {
         String path = "/" + bookingId + "?approved=" + approved;
+        System.out.println();
+        System.out.println("userId = " + userId);
+        System.out.println("bookingId = " + bookingId);
+        System.out.println("approved = " + approved);
+
         return patch(path, userId, null, null);
     }
 }

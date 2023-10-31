@@ -35,6 +35,9 @@ public class BookingController {
                 request.getQueryString()
         );
 
+        log.info("postBookingDto = " + postBookingDto);
+        log.info("bookerId = " + bookerId);
+
         return service.create(postBookingDto, bookerId);
     }
 
@@ -51,6 +54,9 @@ public class BookingController {
                 request.getHeader(USER_ID_HEADER)
         );
 
+        log.info("bookingId = " + bookingId);
+        log.info("userId = "+ userId);
+
         return service.update(bookingId, userId, approved);
     }
 
@@ -64,6 +70,9 @@ public class BookingController {
                 request.getQueryString(),
                 request.getHeader(USER_ID_HEADER)
         );
+
+        log.info("bookingId = " + bookingId);
+        log.info("userId = "+ userId);
 
         return service.getBookingById(bookingId, userId);
     }

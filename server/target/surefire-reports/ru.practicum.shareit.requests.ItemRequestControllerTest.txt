@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: ru.practicum.shareit.requests.ItemRequestControllerTest
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.636 s - in ru.practicum.shareit.requests.ItemRequestControllerTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.469 s - in ru.practicum.shareit.requests.ItemRequestControllerTest

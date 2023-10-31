@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -13,6 +14,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.Map;
 
+@Slf4j
 @Service
 public class ItemClient extends BaseClient {
     private static final String API_PREFIX = "/items";
@@ -28,10 +30,18 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> create(Integer userId, ItemDto itemDto) {
+
+        log.info("userId = " + userId);
+        log.info("itemId = " + itemDto);
+
         return post("", userId, itemDto);
     }
 
     public ResponseEntity<Object> getItemById(Integer userId, Integer itemId) {
+
+        log.info("userId = " + userId);
+        log.info("itemId = " + itemId);
+
         return get("/" + itemId, userId);
     }
 
@@ -40,6 +50,11 @@ public class ItemClient extends BaseClient {
                 "from", from,
                 "size", size
         );
+
+        System.out.println("userId = " + userId);
+        System.out.println("from = " + from);
+        System.out.println("size = " + size);
+
         return get("?from={from}&size={size}", userId, parameters);
     }
 

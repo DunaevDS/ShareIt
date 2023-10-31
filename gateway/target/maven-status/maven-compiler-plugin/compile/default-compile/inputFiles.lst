@@ -1,16 +1,12 @@
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\user\UserClient.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\booking\BookingController.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\booking\dto\BookItemRequestDto.java
-C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\exception\NotFoundException.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\item\ItemClient.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\request\ItemRequestClient.java
-C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\exception\InternalServerErrorException.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\handler\ErrorResponse.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\handler\ErrorHandler.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\booking\BookingClient.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\booking\dto\BookingShortDto.java
-C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\exception\BadRequestException.java
-C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\exception\ConflictException.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\user\dto\UserDto.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\ShareItGateway.java
 C:\Users\Panda\IdeaProjects\ShareIt\gateway\src\main\java\ru\practicum\shareit\item\dto\ItemDto.java
