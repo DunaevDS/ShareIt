@@ -94,9 +94,11 @@ public class BookingServiceImpl implements BookingService {
 
         List<CommentDto> comments = getCommentsByItemId(itemId);
 
-        log.error("booking = " + booking);
 
-        return BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
+        BookingDto savedBooking = BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
+
+        log.error("booking = " + booking);
+        return savedBooking;
     }
 
     @Override
@@ -136,7 +138,10 @@ public class BookingServiceImpl implements BookingService {
         Integer itemId = booking.getItem().getId();
         List<CommentDto> comments = getCommentsByItemId(itemId);
 
-        return BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
+        BookingDto savedBooking = BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
+        log.error("booking = " + booking);
+
+        return savedBooking;
     }
 
     @Override
