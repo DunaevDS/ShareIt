@@ -5,20 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ecb76853-bc44-4048-93f8-80fc766cdd7c" name="Changes" comment="feat: realized server\gateway structure">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a2c03ad8-32e2-4982-adcd-f6a3d067b398.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a2c03ad8-32e2-4982-adcd-f6a3d067b398.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a2c03ad8-32e2-4982-adcd-f6a3d067b398/storage_v2/_src_/database/shareit.SuFweg/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a2c03ad8-32e2-4982-adcd-f6a3d067b398/storage_v2/_src_/database/shareit.SuFweg/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/booking/BookingClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/booking/BookingClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/booking/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/booking/BookingController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/booking/dto/BookItemRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/booking/dto/BookItemRequestDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/item/ItemClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/item/ItemClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/item/ItemController.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/ru/practicum/shareit/item/ItemController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/target/classes/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/target/classes/ru/practicum/shareit/booking/BookingClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/target/classes/ru/practicum/shareit/booking/BookingClient.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/target/classes/ru/practicum/shareit/booking/BookingController.class" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/target/classes/ru/practicum/shareit/booking/BookingController.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/target/classes/ru/practicum/shareit/booking/dto/BookItemRequestDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/target/classes/ru/practicum/shareit/booking/dto/BookItemRequestDto.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/target/classes/ru/practicum/shareit/item/ItemClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/target/classes/ru/practicum/shareit/item/ItemClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/target/shareit-gateway-0.0.1-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/target/shareit-gateway-0.0.1-SNAPSHOT.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway/target/shareit-gateway-0.0.1-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/target/shareit-gateway-0.0.1-SNAPSHOT.jar.original" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/practicum/shareit/booking/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/practicum/shareit/booking/BookingController.java" afterDir="false" />
@@ -30,7 +27,7 @@
       <change beforePath="$PROJECT_DIR$/server/target/classes/ru/practicum/shareit/item/ItemController.class" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/classes/ru/practicum/shareit/item/ItemController.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/shareit-server-0.0.1-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/shareit-server-0.0.1-SNAPSHOT.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/shareit-server-0.0.1-SNAPSHOT.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/shareit-server-0.0.1-SNAPSHOT.jar.original" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/2023-10-29T21-45-27_916.dumpstream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/2023-10-31T19-09-31_509.dumpstream" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/TEST-ru.practicum.shareit.booking.BookingControllerTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/TEST-ru.practicum.shareit.booking.BookingControllerTest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/TEST-ru.practicum.shareit.booking.BookingServiceImplTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/TEST-ru.practicum.shareit.booking.BookingServiceImplTest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/TEST-ru.practicum.shareit.booking.BookingServiceTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/TEST-ru.practicum.shareit.booking.BookingServiceTest.xml" afterDir="false" />
@@ -55,7 +52,6 @@
       <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.booking.dto.BookingDtoTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.booking.dto.BookingDtoTest.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.booking.dto.BookingShortDtoTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.booking.dto.BookingShortDtoTest.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.booking.dto.PostBookingDtoTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.booking.dto.PostBookingDtoTest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.handler.ErrorResponseTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.handler.ErrorResponseTest.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.item.ItemControllerTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.item.ItemControllerTest.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.item.ItemServiceImplTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.item.ItemServiceImplTest.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.item.ItemServiceTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/target/surefire-reports/ru.practicum.shareit.item.ItemServiceTest.txt" afterDir="false" />
@@ -120,7 +116,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;add-docker&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Panda/IdeaProjects/java-shara3&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Panda/IdeaProjects/ShareIt/server/Dockerfile&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -158,7 +154,7 @@
       <recent name="ru.practicum.shareit.booking.dto" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.ShareItServer">
+  <component name="RunManager" selected="Remote JVM Debug.Unnamed">
     <configuration name="BookingControllerTest.getBooking" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="shareit-server" />
       <extension name="coverage">
@@ -232,6 +228,19 @@
       </MavenSettings>
       <method v="2" />
     </configuration>
+    <configuration name="Unnamed" type="Remote" nameIsGenerated="true">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" />
+      <option name="HOST" />
+      <option name="PORT" value="65535" />
+      <option name="AUTO_RESTART" value="false" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="65535" />
+        <option name="LOCAL" value="false" />
+      </RunnerSettings>
+      <method v="2" />
+    </configuration>
     <configuration name="ShareItApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="shareit" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="ru.practicum.shareit.ShareItApp" />
@@ -271,12 +280,98 @@
       </deployment>
       <method v="2" />
     </configuration>
+    <configuration name="gateway" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="shareit_gateway_image" />
+          <option name="containerName" value="gateway" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="8080" />
+                <option name="hostPort" value="8080" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+          <option name="sourceFilePath" value="server/Dockerfile" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="gateway_image" type="docker-deploy" factoryName="docker-image" server-name="Docker">
+      <deployment type="docker-image">
+        <settings>
+          <option name="imageTag" value="shareit_gateway_image" />
+          <option name="containerName" value="gateway" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="8080" />
+                <option name="hostPort" value="8080" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="server" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="shareit_server_image" />
+          <option name="containerName" value="server" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="9090" />
+                <option name="hostPort" value="9090" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+          <option name="sourceFilePath" value="server/Dockerfile" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="server_image" type="docker-deploy" factoryName="docker-image" server-name="Docker">
+      <deployment type="docker-image">
+        <settings>
+          <option name="imageTag" value="shareit_server_image" />
+          <option name="containerName" value="server" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="9090" />
+                <option name="hostPort" value="9090" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.ShareItGateway" />
+      <item itemvalue="Application.ShareItServer" />
+      <item itemvalue="Docker.gateway" />
+      <item itemvalue="Docker.gateway_image" />
+      <item itemvalue="Docker.server" />
+      <item itemvalue="Docker.server_image" />
+      <item itemvalue="JUnit.BookingControllerTest.getBooking" />
+      <item itemvalue="JUnit.BookingControllerTest.getBookings" />
+      <item itemvalue="JUnit.BookingControllerTest.getBookingsByOwner" />
+      <item itemvalue="Maven.shareit [clean]" />
+      <item itemvalue="Remote JVM Debug.Unnamed" />
+      <item itemvalue="Spring Boot.ShareItApp" />
+      <item itemvalue="Spring Boot.ShareItServer" />
+      <item itemvalue="Spring Boot.ShareItGateway" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Spring Boot.ShareItGateway" />
+        <item itemvalue="Maven.shareit [clean]" />
         <item itemvalue="JUnit.BookingControllerTest.getBookingsByOwner" />
         <item itemvalue="JUnit.BookingControllerTest.getBookings" />
-        <item itemvalue="Maven.shareit [clean]" />
         <item itemvalue="JUnit.BookingControllerTest.getBooking" />
       </list>
     </recent_temporary>
@@ -320,7 +415,7 @@
       <workItem from="1698564693712" duration="39709000" />
       <workItem from="1698683023661" duration="2605000" />
       <workItem from="1698685640894" duration="9042000" />
-      <workItem from="1698758779980" duration="2292000" />
+      <workItem from="1698758779980" duration="17115000" />
     </task>
     <task id="LOCAL-00001" summary="fix">
       <option name="closed" value="true" />
@@ -530,7 +625,15 @@
       <option name="project" value="LOCAL" />
       <updated>1698600532272</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="feat: realized server\gateway structure">
+      <option name="closed" value="true" />
+      <created>1698762016867</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1698762016867</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -59,7 +59,7 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> update(ItemDto itemDto, Integer itemId, Integer userId) {
-        return patch("/" + itemId, userId, itemDto);
+        return patch("/" + itemId.longValue(), userId, itemDto);
     }
 
     public ResponseEntity<Object> delete(Integer itemId, Integer userId) {

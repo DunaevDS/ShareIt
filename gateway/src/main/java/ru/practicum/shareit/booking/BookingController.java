@@ -47,12 +47,6 @@ public class BookingController {
         return bookingClient.getBookingsOwner(userId, state, from, size);
     }
 
-    @PostMapping
-    public ResponseEntity<Object> create(@RequestHeader(USER_ID) Integer userId,
-                                         @RequestBody @Valid BookItemRequestDto requestDto) {
-        log.info("Creating booking {}, userId={}", requestDto, userId);
-        return bookingClient.create(userId, requestDto);
-    }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> getBooking(@RequestHeader(USER_ID) Integer userId,
@@ -60,6 +54,13 @@ public class BookingController {
         log.info("Get booking {}, userId={}", bookingId, userId);
 
         return bookingClient.getBooking(userId, bookingId);
+    }
+
+    @PostMapping
+    public ResponseEntity<Object> create(@RequestHeader(USER_ID) Integer userId,
+                                         @RequestBody @Valid BookItemRequestDto requestDto) {
+        log.info("Creating booking {}, userId={}", requestDto, userId);
+        return bookingClient.create(userId, requestDto);
     }
 
     @ResponseBody

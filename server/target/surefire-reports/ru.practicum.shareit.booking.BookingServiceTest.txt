@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: ru.practicum.shareit.booking.BookingServiceTest
 -------------------------------------------------------------------------------
-Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.542 s - in ru.practicum.shareit.booking.BookingServiceTest
+Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.818 s - in ru.practicum.shareit.booking.BookingServiceTest

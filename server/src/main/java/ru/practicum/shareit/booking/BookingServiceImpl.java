@@ -59,6 +59,10 @@ public class BookingServiceImpl implements BookingService {
 
         User user = UserMapper.mapToUser(userService.findUserById(bookerId));
 
+
+        log.error("user = " + user);
+        log.error("posBookingDto" + postBookingDto);
+
         Integer itemId = postBookingDto.getItemId();
         Item item = itemRepository.findById(itemId).orElseThrow(() -> throwNotFoundException(
                 "NotFoundException: Item with id= " + itemId + " was not found."));
@@ -89,6 +93,8 @@ public class BookingServiceImpl implements BookingService {
         bookingTimeValidation(booking);
 
         List<CommentDto> comments = getCommentsByItemId(itemId);
+
+        log.error("booking = " + booking);
 
         return BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
     }
