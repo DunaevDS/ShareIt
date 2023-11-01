@@ -59,9 +59,9 @@ public class BookingServiceImpl implements BookingService {
 
         User user = UserMapper.mapToUser(userService.findUserById(bookerId));
 
-
-        log.error("user = " + user);
-        log.error("posBookingDto" + postBookingDto);
+        log.info("Start post method in BookingServiceImpl...");
+        log.info("user = " + user);
+        log.info("postBookingDto = " + postBookingDto);
 
         Integer itemId = postBookingDto.getItemId();
         Item item = itemRepository.findById(itemId).orElseThrow(() -> throwNotFoundException(
@@ -98,12 +98,16 @@ public class BookingServiceImpl implements BookingService {
         BookingDto savedBooking = BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
 
         log.info("savedBooking = " + savedBooking);
+        log.info("end of post method in BookingServiceImpl..");
         return savedBooking;
     }
 
     @Override
     public BookingDto update(Integer bookingId, Integer userId, Boolean approved) {
+        log.info("Start post method in BookingServiceImpl...");
+
         userService.findUserById(userId);
+
 
         Booking booking = bookingRepository.findByIdAndItem_Owner_Id(bookingId, userId).orElseThrow(() -> throwNotFoundException(
                 "NotFoundException: Booking with id=" + bookingId + " was not found."));
@@ -141,6 +145,7 @@ public class BookingServiceImpl implements BookingService {
         BookingDto savedBooking = BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
 
         log.info("savedBooking = " + savedBooking);
+        log.info("end of patch method in BookingServiceImpl..");
         return savedBooking;
     }
 
