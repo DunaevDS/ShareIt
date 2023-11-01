@@ -47,15 +47,11 @@ public class BookingClient extends BaseClient {
 
     public ResponseEntity<Object> getBooking(Integer userId, Integer bookingId) {
 
-        System.out.println("userId = " + userId);
-        System.out.println("bookingId = " + bookingId);
-
         return get("/" + bookingId, userId);
     }
 
     public ResponseEntity<Object> create(Integer userId, BookItemRequestDto requestDto) {
-        System.out.println("userId = " + userId);
-        System.out.println("requestDto = "+ requestDto);
+
         return post("", userId, requestDto);
     }
 

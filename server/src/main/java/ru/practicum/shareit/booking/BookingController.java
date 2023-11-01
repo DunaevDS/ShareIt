@@ -27,9 +27,6 @@ public class BookingController {
         log.info("Получен POST-запрос к эндпоинту: '/bookings' " +
                 "на создание бронирования от пользователя с ID={}", bookerId);
 
-        log.info("postBookingDto = " + postBookingDto);
-        log.info("bookerId = " + bookerId);
-
         return service.create(postBookingDto, bookerId);
     }
 
@@ -40,9 +37,6 @@ public class BookingController {
                              @RequestParam Boolean approved) {
         log.info("Получен PATCH-запрос к эндпоинту: '/bookings' на обновление статуса бронирования с ID={}", bookingId);
 
-        log.info("bookingId = " + bookingId);
-        log.info("userId = "+ userId);
-
         return service.update(bookingId, userId, approved);
     }
 
@@ -50,9 +44,6 @@ public class BookingController {
     public BookingDto getBookingById(@PathVariable Integer bookingId,
                                      @RequestHeader(USER_ID_HEADER) Integer userId) {
         log.info("Получен PATCH-запрос к эндпоинту: '/bookings' на обновление статуса бронирования с ID={}", bookingId);
-
-        log.info("bookingId = " + bookingId);
-        log.info("userId = "+ userId);
 
         return service.getBookingById(bookingId, userId);
     }

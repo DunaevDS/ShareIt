@@ -25,9 +25,6 @@ public class ItemController {
                                @RequestHeader(owner) Integer ownerId) {
         log.info("Получен GET-запрос к эндпоинту: '/items' на получение вещи с ID={}", itemId);
 
-        log.info("ownerId = " + ownerId);
-        log.info("itemId = " + itemId);
-
         return itemService.getItemById(itemId, ownerId);
     }
 
@@ -37,9 +34,6 @@ public class ItemController {
                           @RequestHeader(owner) Integer ownerId) {
         log.info("Получен POST-запрос к эндпоинту: '/items' на добавление вещи владельцем с ID={}", ownerId);
 
-        log.info("itemDto = " + itemDto);
-        log.info("ownerId = " + ownerId);
-
         return itemService.create(itemDto, ownerId);
     }
 
@@ -48,10 +42,6 @@ public class ItemController {
                                          @RequestParam(defaultValue = "0") Integer from,
                                          @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен GET-запрос к эндпоинту: '/items' на получение всех вещей владельца с ID={}", ownerId);
-
-        System.out.println("ownerId = " + ownerId);
-        System.out.println("from = " + from);
-        System.out.println("size = " + size);
 
         return itemService.getItemsByOwner(ownerId, from, size);
     }

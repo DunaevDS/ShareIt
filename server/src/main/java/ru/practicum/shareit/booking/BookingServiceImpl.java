@@ -59,10 +59,6 @@ public class BookingServiceImpl implements BookingService {
 
         User user = UserMapper.mapToUser(userService.findUserById(bookerId));
 
-        log.info("Start post method in BookingServiceImpl...");
-        log.info("user = " + user);
-        log.info("postBookingDto = " + postBookingDto);
-
         Integer itemId = postBookingDto.getItemId();
         Item item = itemRepository.findById(itemId).orElseThrow(() -> throwNotFoundException(
                 "NotFoundException: Item with id= " + itemId + " was not found."));
@@ -94,20 +90,12 @@ public class BookingServiceImpl implements BookingService {
 
         List<CommentDto> comments = getCommentsByItemId(itemId);
 
-
-        BookingDto savedBooking = BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
-
-        log.info("savedBooking = " + savedBooking);
-        log.info("end of post method in BookingServiceImpl..");
-        return savedBooking;
+        return BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
     }
 
     @Override
     public BookingDto update(Integer bookingId, Integer userId, Boolean approved) {
-        log.info("Start post method in BookingServiceImpl...");
-
         userService.findUserById(userId);
-
 
         Booking booking = bookingRepository.findByIdAndItem_Owner_Id(bookingId, userId).orElseThrow(() -> throwNotFoundException(
                 "NotFoundException: Booking with id=" + bookingId + " was not found."));
@@ -142,11 +130,7 @@ public class BookingServiceImpl implements BookingService {
         Integer itemId = booking.getItem().getId();
         List<CommentDto> comments = getCommentsByItemId(itemId);
 
-        BookingDto savedBooking = BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
-
-        log.info("savedBooking = " + savedBooking);
-        log.info("end of patch method in BookingServiceImpl..");
-        return savedBooking;
+        return BookingMapper.toBookingDto(bookingRepository.save(booking), comments);
     }
 
     @Override
