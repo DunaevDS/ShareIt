@@ -7,6 +7,7 @@
     <list default="true" id="ecb76853-bc44-4048-93f8-80fc766cdd7c" name="Changes" comment="feat: realized server\gateway structure">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/practicum/shareit/booking/BookingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/practicum/shareit/booking/BookingServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/ru/practicum/shareit/item/ItemServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ru/practicum/shareit/item/ItemServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -346,7 +347,7 @@
       <workItem from="1698683023661" duration="2605000" />
       <workItem from="1698685640894" duration="9042000" />
       <workItem from="1698758779980" duration="17115000" />
-      <workItem from="1698776484574" duration="3514000" />
+      <workItem from="1698776484574" duration="4648000" />
     </task>
     <task id="LOCAL-00001" summary="fix">
       <option name="closed" value="true" />
@@ -572,7 +573,23 @@
       <option name="project" value="LOCAL" />
       <updated>1698776558545</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="feat: realized server\gateway structure">
+      <option name="closed" value="true" />
+      <created>1698781847968</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1698781847968</updated>
+    </task>
+    <task id="LOCAL-00030" summary="feat: realized server\gateway structure">
+      <option name="closed" value="true" />
+      <created>1698781856061</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1698781856061</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
