@@ -57,10 +57,6 @@ public class BookingClient extends BaseClient {
 
     public ResponseEntity<Object> update(Integer bookingId, Integer userId, Boolean approved) {
         String path = "/" + bookingId + "?approved=" + approved;
-        System.out.println();
-        System.out.println("userId = " + userId);
-        System.out.println("bookingId = " + bookingId);
-        System.out.println("approved = " + approved);
 
         return patch(path, userId, null, null);
     }

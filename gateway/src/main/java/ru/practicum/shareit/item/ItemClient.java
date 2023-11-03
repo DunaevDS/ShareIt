@@ -31,16 +31,10 @@ public class ItemClient extends BaseClient {
 
     public ResponseEntity<Object> create(Integer userId, ItemDto itemDto) {
 
-        log.info("userId = " + userId);
-        log.info("itemId = " + itemDto);
-
         return post("", userId, itemDto);
     }
 
     public ResponseEntity<Object> getItemById(Integer userId, Integer itemId) {
-
-        log.info("userId = " + userId);
-        log.info("itemId = " + itemId);
 
         return get("/" + itemId, userId);
     }
@@ -50,10 +44,6 @@ public class ItemClient extends BaseClient {
                 "from", from,
                 "size", size
         );
-
-        System.out.println("userId = " + userId);
-        System.out.println("from = " + from);
-        System.out.println("size = " + size);
 
         return get("?from={from}&size={size}", userId, parameters);
     }
