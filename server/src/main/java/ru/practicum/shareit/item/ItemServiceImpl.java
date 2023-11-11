@@ -109,6 +109,11 @@ public class ItemServiceImpl implements ItemService {
         } else {
             itemDto = ItemMapper.mapToItemDto(item, getCommentsByItemId(itemId));
         }
+
+        log.info("----------------------");
+        log.info("itemDto = " + itemDto);
+        log.info("lastBooking = " + lastBooking);
+        log.info("nextBooking = " + nextBooking);
         return itemDto;
     }
 
